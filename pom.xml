@@ -5,4 +5,11 @@
   <version>0.1.0</version>
   <name>Database Package Manager</name>
   <description>A Database Package Manager that allows you to deploy DB packages as part of your software distribution.</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.json</groupId>
+  		<artifactId>json</artifactId>
+  		<version>20151123</version>
+  	</dependency>
+  </dependencies>
 </project>
