@@ -162,16 +162,17 @@ Any post-installation tasks have to be specified here. There are three different
     * config
     * install package1, [package 2]
     * uninstall package1, [package2]
-    * downgrade package1, [package2]
         
     build
-        The build option will build a dbpm package for distribution. dbpm has to be executed within the package root folder (see Package format).
+        The build process will build a dbpm package for distribution. dbpm has to be executed within the package root folder (see Package format).
+        
+        -v               Verbose output
     
     config
         The configuration will setup the initial repository needed for dbpm. By default, all packages and information will be stored on disk.
     
+        -v               Verbose output
         -file            Will store the repository information within a file on disk (default)
-    
         -db              Will store the repository information within a Database
         -user            Repository username (has to exist)
         -password        Repository user password
@@ -181,7 +182,8 @@ Any post-installation tasks have to be specified here. There are three different
     
     install
         The installation process will install a given package into the Database.
-    
+
+        -v               Verbose output    
         -user            Database username/schema where the package should be installed (has to exist)
         -password        Database user password
         -adminUser       A privileged Database user for executing the ".sys" scripts within the package, if present. If there are no ".sys" scripts within the package this user can be omitted.
@@ -193,6 +195,7 @@ Any post-installation tasks have to be specified here. There are three different
     uninstall
         The uninstallation process will uninstall a given package from a schema.
     
+        -v               Verbose output
         -user            Database username/schema where the package should be installed (has to exist)
         -password        Database user password
         -adminUser       A privileged Database user for executing the ".sys" scripts within the package, if present. If there are no ".sys" scripts within the package this user can be omitted.
