@@ -19,11 +19,11 @@ import java.util.zip.ZipOutputStream;
 
 import com.dbpm.Module;
 import com.dbpm.logger.Logger;
-import com.dbpm.utils.AllowedFiles;
-import com.dbpm.utils.AllowedFolders;
-import com.dbpm.utils.IllegalFileException;
-import com.dbpm.utils.IllegalFolderException;
 import com.dbpm.utils.ManifestReader;
+import com.dbpm.utils.filesystem.AllowedFiles;
+import com.dbpm.utils.filesystem.AllowedFolders;
+import com.dbpm.utils.filesystem.IllegalFileException;
+import com.dbpm.utils.filesystem.IllegalFolderException;
 
 /**
  * This class handles the creation of dbpm packages.

@@ -7,7 +7,7 @@
 *
 */
 
-package com.dbpm.utils;
+package com.dbpm.utils.filesystem;
 
 public class IllegalFileException extends Exception {
 
