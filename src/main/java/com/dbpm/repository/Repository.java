@@ -15,7 +15,7 @@ public interface Repository {
 	
 	public boolean createRepo();
 	
-	public boolean writeEntry (Package pgk);
+	public boolean writeEntry (String db, String schema, Package pgk);
 	
 	public boolean savePackage(Package pgk, byte[] content);
 

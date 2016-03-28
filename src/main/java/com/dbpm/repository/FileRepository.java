@@ -72,7 +72,7 @@ public class FileRepository implements Repository {
 	}
 
 	@Override
-	public boolean writeEntry(Package pgk) {
+	public boolean writeEntry(String db, String schema, Package pgk) {
 		// TODO Auto-generated method stub
 		return false;
 	}
