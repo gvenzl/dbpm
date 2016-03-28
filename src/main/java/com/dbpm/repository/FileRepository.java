@@ -11,6 +11,15 @@ package com.dbpm.repository;
 
 import java.io.File;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import com.dbpm.logger.Logger;
 
 public class FileRepository implements Repository {
@@ -36,7 +45,15 @@ public class FileRepository implements Repository {
 			}
 		}
 		try {
-			repo.createNewFile();
+			// Initialize XML file
+			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+			Element rootElement = doc.createElement("repository");
+			doc.appendChild(rootElement);
+			
+			// Write XML to disk
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.transform(new DOMSource(doc), new StreamResult(repo));
+
 		} catch (Exception e) {
 			Logger.error(e.getMessage());
 			return false;
