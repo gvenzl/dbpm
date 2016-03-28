@@ -10,7 +10,7 @@ The dbpm package format is **NAME-MAJOR.MINOR.PATH-PLATFORM.dbpkg**
 **MAJOR:** Major version  
 **MINOR:** Minor version  
 **PATCH:** Patch version  
-**PLATFORM:** The Database platform (i.e. Oracle, MySQL, SQL Server)  
+**PLATFORM:** The Database platform (i.e. Oracle, MySQL, PostgreSQL)  
 **.dbpkg:** Extension marking the file as dbpm file  
 
 ***The package numbers must comply with [Semantic Versioning 2.0.0](http://semver.org/)***
@@ -168,17 +168,20 @@ Any post-installation tasks have to be specified here. There are three different
         
         -v               Verbose output
     
-    config
+    config [file | db]
         The configuration will setup the initial repository needed for dbpm. By default, all packages and information will be stored on disk.
     
-        -v               Verbose output
-        -file            Will store the repository information within a file on disk (default)
-        -db              Will store the repository information within a Database
+        file             Will store the repository information within a file on disk (default)
+        
+        db               Will store the repository information within a Database
+        -platform        The Database platform (oracle, mysql, postgres)
         -user            Repository username (has to exist)
         -password        Repository user password
         -host            The host where the Database is running on
         -port            The port of the Database
         -dbName          The Database name for the repository to be stored at
+
+        -v               Verbose output
     
     install
         The installation process will install a given package into the Database.

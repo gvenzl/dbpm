@@ -14,6 +14,7 @@ import com.dbpm.config.Configurator;
 import com.dbpm.install.Installer;
 import com.dbpm.logger.Verbose;
 import com.dbpm.uninstall.Uninstaller;
+import com.dbpm.utils.Parameter;
 
 public class DBPM {
 
@@ -50,17 +51,20 @@ public class DBPM {
 			System.out.println();
 			System.out.println("    -v               Verbose output");
 			System.out.println();
-			System.out.println("config");
+			System.out.println("config [file | db]");
 			System.out.println("    The configuration will setup the initial repository needed for dbpm. By default, all packages and information will be stored on disk.");
 			System.out.println();
-			System.out.println("    -v               Verbose output");
-			System.out.println("    -file            Will store the repository information within a file on disk (default)");
-			System.out.println("    -db              Will store the repository information within a Database");
+			System.out.println("    file             Will store the repository information within a file on disk (default)");
+			System.out.println();
+			System.out.println("    db               Will store the repository information within a Database");
+			System.out.println("    -platform        The Database platform (oracle, mysql, postgres)");
 			System.out.println("    -user            Repository username (has to exist)");
 			System.out.println("    -password        Repository user password");
 			System.out.println("    -host            The host where the Database is running on");
 			System.out.println("    -port            The port of the Database");
 			System.out.println("    -dbName          The Database name for the repository to be stored at");
+			System.out.println();
+			System.out.println("    -v               Verbose output");
 			System.out.println();
 			System.out.println("install");
 			System.out.println("    The installation process will install a given package into the Database.");
@@ -109,7 +113,7 @@ public class DBPM {
 			
 			// Check for verbose flag
 			for (int i=0; i<args.length;i++) {
-				if ("-v".equals(args[i])) {
+				if (args[i].equals(Parameter.VERBOSE)) {
 					Verbose.getInstance().setVerbose(true);
 					break;
 				}
@@ -133,7 +137,7 @@ public class DBPM {
 			}	
 		}
 		catch (IllegalArgumentException e) {
-			return new HelpPrinter(e.getMessage());
+			return new HelpPrinter("ERROR: " + e.getMessage());
 		}
 	}
 }
