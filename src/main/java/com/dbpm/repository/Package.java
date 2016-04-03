@@ -17,6 +17,24 @@ public class Package {
 	private int		patch;
 	private String  platform;
 	
+	public Package(String packageName) {
+		String pgkNme = packageName.substring(0, packageName.lastIndexOf("."));
+		name = pgkNme.substring(0, pgkNme.indexOf("-"));
+		String version = packageName.substring(pgkNme.indexOf("-")+1, pgkNme.lastIndexOf("-"));
+		major = Integer.valueOf(version.substring(0, version.indexOf("."))).intValue();
+		minor = Integer.valueOf(version.substring(version.indexOf(".")+1, version.lastIndexOf("."))).intValue();
+		patch = Integer.valueOf(version.substring(version.lastIndexOf(".")+1)).intValue();
+		platform = pgkNme.substring(pgkNme.lastIndexOf("-")+1);
+	}
+	
+	public Package() {
+
+	}
+
+	public String getFullName() {
+		return name + "-" + major + "." + minor + "." + patch + "-" +  platform + ".dbpgk";
+	}
+	
 	public String getName() {
 		return name;
 	}

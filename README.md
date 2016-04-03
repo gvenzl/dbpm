@@ -213,6 +213,20 @@ dbpm has a repository in which it stores a copy of packages as all as and the in
 
 ### Repository structure
 
+### XML based
+
+**repo.xml**
+
+    <repository>
+      <database name="Dev">
+        <schema name="QA12">
+          <package>Starter-1.0.0-oracle.dbpgk</package>
+        </schema>
+      </database>
+    </repository>
+
+### Database based
+
 **DBPM_PACKAGES**
 
 Column        | Datatype
