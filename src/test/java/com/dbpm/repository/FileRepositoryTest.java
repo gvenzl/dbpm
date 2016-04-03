@@ -59,7 +59,13 @@ public class FileRepositoryTest{
 	@Test
 	public void test_isPackageInstalledNegative() throws Exception {
 		repo.createRepo();
+		// No database or schema exist
 		assertFalse(repo.isPackageInstalled("testDB", "TestSchema", new Package(TESTPACKAGE)));
+		// No schema exists but database does already exist
+		assertTrue(repo.writeEntry("testDB", "TestSchema", new Package(TESTPACKAGE)));
+		assertFalse(repo.isPackageInstalled("testDB", "OtherTestSchema", new Package(TESTPACKAGE)));
+		// Schema and DB exist but package does not exist
+		assertFalse(repo.isPackageInstalled("testDB", "TestSchema", new Package("dummy-9.9.9-mysql.dbpgk")));
 	}
 	
 	@Test
