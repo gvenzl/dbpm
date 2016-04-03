@@ -187,7 +187,7 @@ Any post-installation tasks have to be specified here. There are three different
         The installation process will install a given package into the Database.
 
         -v               Verbose output    
-        -file            Specify the package file to install
+        -file            Specify the package file to install (if no file is specified, all .dbpkg files in the current directory will be installed)
         -user            Database username/schema where the package should be installed (has to exist)
         -password        Database user password
         -adminUser       A privileged Database user for executing the ".sys" scripts within the package, if present. If there are no ".sys" scripts within the package this user can be omitted.

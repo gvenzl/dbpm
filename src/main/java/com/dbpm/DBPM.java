@@ -70,7 +70,7 @@ public class DBPM {
 			System.out.println("    The installation process will install a given package into the Database.");
 			System.out.println();
 			System.out.println("    -v               Verbose output    ");
-			System.out.println("    -file            Specify the package file to install");
+			System.out.println("    -file            Specify the package file to install (if no file is specified, all .dbpkg files in the current directory will be installed)");
 			System.out.println("    -user            Database username/schema where the package should be installed (has to exist)");
 			System.out.println("    -password        Database user password");
 			System.out.println("    -adminUser       A privileged Database user for executing the \".sys\" scripts within the package, if present. If there are no \".sys\" scripts within the package this user can be omitted.");
