@@ -9,7 +9,7 @@
 
 package com.dbpm.repository;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +47,19 @@ public class FileRepositoryTest{
 	public void test_writeEntry() {
 		repo.createRepo();
 		assertTrue(repo.writeEntry("testDB", "TestSchema", new Package(TESTPACKAGE)));
+	}
+	
+	@Test
+	public void test_isPackageInstalledPositive() throws Exception{
+		repo.createRepo();
+		assertTrue(repo.writeEntry("testDB", "TestSchema", new Package(TESTPACKAGE)));
+		assertTrue(repo.isPackageInstalled("testDB", "TestSchema", new Package(TESTPACKAGE)));
+	}
+	
+	@Test
+	public void test_isPackageInstalledNegative() throws Exception {
+		repo.createRepo();
+		assertFalse(repo.isPackageInstalled("testDB", "TestSchema", new Package(TESTPACKAGE)));
 	}
 	
 	@Test

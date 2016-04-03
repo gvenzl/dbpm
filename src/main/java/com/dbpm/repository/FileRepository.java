@@ -57,11 +57,10 @@ public class FileRepository implements Repository {
 			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 			doc.appendChild(doc.createElement("repository"));
 			
-			// Write XML to disk
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.transform(new DOMSource(doc), new StreamResult(repo));
-
+			if (!saveRepository(doc)) {
+				return false;
+			}
+			
 		} catch (Exception e) {
 			Logger.error(e.getMessage());
 			return false;
@@ -86,46 +85,34 @@ public class FileRepository implements Repository {
 
 	@Override
 	public boolean writeEntry(String db, String schema, Package pgk) {
-		
-		// Get root element.
-		Document doc;
 		try {
-			doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(repo);
+			Document doc = openRepository();
 			
 			Element root = doc.getDocumentElement();
 			Element dbElem = null;
 			Element schElem = null;
 			
 			// Get database entry
-			dbElem = findNode(root, "database", "name", db);
+			dbElem = findNode(root, "database", db);
 			// If database entry doesn't exist yet, create it
 			if (null == dbElem) {
-				dbElem = createTag(doc, "database", "name", db);
+				dbElem = createTag(doc, "database", db);
 				root.appendChild(dbElem);
 			}
 			
 			// Get schema entry
-			schElem = findNode(dbElem, "schema", "name", schema);
+			schElem = findNode(dbElem, "schema", schema);
 			if (null == schElem) {
-				schElem = createTag(doc, "schema", "name", schema);
+				schElem = createTag(doc, "schema", schema);
 				dbElem.appendChild(schElem);
 			}
 			
-			Element pgkElem = createTag(doc, "package", null, null);
+			Element pgkElem = createTag(doc, "package", null);
 			pgkElem.appendChild(doc.createTextNode(pgk.getFullName()));
 			schElem.appendChild(pgkElem);
 							
-			// Write XML to disk
-			Transformer transformer;
-			try {
-				transformer = TransformerFactory.newInstance().newTransformer();
-				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-				transformer.transform(new DOMSource(doc), new StreamResult(repo));
-				return true;
-				
-			} catch (TransformerFactoryConfigurationError | TransformerException e) {
-				Logger.error(e.getMessage());
-			}
+			return saveRepository(doc);
+			
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			Logger.error("Cannot open repository file");
 			Logger.error(e.getMessage());
@@ -133,20 +120,39 @@ public class FileRepository implements Repository {
 		return false;
 	}
 	
-	private Element findNode(Element root, String nodeName, String key, String value) {
+	private Element findNode(Element root, String nodeName, String name) {
 		NodeList nodeList = root.getElementsByTagName(nodeName);
 		for (int i=0;i<nodeList.getLength();i++) {
-			if(nodeList.item(i).getAttributes().getNamedItem(key).equals(value)) {
+			if(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue().equals(name)) {
 				return (Element) nodeList.item(i);
 			}
 		}
 		return null;
 	}
 	
-	private Element createTag(Document doc, String name, String attrName, String value) {
-		Element elem = doc.createElement(name);
-		if (null != attrName && null != value) {
-			elem.setAttribute(attrName, value);
+	private Document openRepository() throws SAXException, IOException, ParserConfigurationException {
+		return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(repo);
+	}
+	
+	private boolean saveRepository(Document doc) {
+		// Write XML to disk
+		Transformer transformer;
+		try {
+			transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.transform(new DOMSource(doc), new StreamResult(repo));
+			return true;
+			
+		} catch (TransformerFactoryConfigurationError | TransformerException e) {
+			Logger.error(e.getMessage());
+			return false;
+		}
+	}
+	
+	private Element createTag(Document doc, String tagName, String name) {
+		Element elem = doc.createElement(tagName);
+		if (null != name) {
+			elem.setAttribute("name", name);
 		}
 		return elem;
 	}
@@ -165,6 +171,31 @@ public class FileRepository implements Repository {
 			Logger.error(e.getMessage());
 			return false;
 		}
+	}
+
+	@Override
+	public boolean isPackageInstalled(String dbName, String schemaName, Package pgk) throws SAXException, IOException, ParserConfigurationException {
+		Document doc = openRepository();
+		
+		Element database = findNode(doc.getDocumentElement(), "database", dbName);
+		// Database is new
+		if (null == database) {
+			return false;
+		}
+		
+		Element schema = findNode(database, "schema", schemaName);
+		// Schema is new
+		if (null == schema ) {
+			return false;
+		}
+		
+		NodeList pkgList = schema.getChildNodes();
+		for(int i=0; i<pkgList.getLength();i++) {
+			if (pkgList.item(i).getTextContent().equals(pgk.getFullName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
