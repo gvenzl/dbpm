@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -20,10 +22,11 @@ import java.util.zip.ZipOutputStream;
 import com.dbpm.Module;
 import com.dbpm.logger.Logger;
 import com.dbpm.utils.ManifestReader;
-import com.dbpm.utils.filesystem.AllowedFiles;
-import com.dbpm.utils.filesystem.AllowedFolders;
-import com.dbpm.utils.filesystem.IllegalFileException;
-import com.dbpm.utils.filesystem.IllegalFolderException;
+import com.dbpm.utils.files.AllowedFiles;
+import com.dbpm.utils.files.AllowedFolders;
+import com.dbpm.utils.files.IllegalFileException;
+import com.dbpm.utils.files.IllegalFolderException;
+import com.dbpm.repository.Package;
 
 /**
  * This class handles the creation of dbpm packages.
@@ -31,8 +34,9 @@ import com.dbpm.utils.filesystem.IllegalFolderException;
  */
 public class PackageBuilder implements Module {
 	
+	private static int BYTES = 8192;
 	private File workDir;
-	private ManifestReader manifest;
+	private Package dbpmPackage;
 	
 	public PackageBuilder() {
 		workDir = new File (System.getProperty("user.dir"));
@@ -50,14 +54,14 @@ public class PackageBuilder implements Module {
 		else {
 			Logger.verbose("Found manifest, reading...");
 			try {
-				manifest = new ManifestReader(manifestFile);
-				Logger.verbose("Package name: " + manifest.getPackageName());
-				Logger.verbose("Building for platform: " + manifest.getPlatform());
+				String manifest = new  String(
+											Files.readAllBytes(
+												Paths.get(manifestFile.getAbsolutePath())));
+				dbpmPackage = new ManifestReader(manifest).getPackage();
+				Logger.verbose("Package name: " + dbpmPackage.getName());
+				Logger.verbose("Building for platform: " + dbpmPackage.getPlatform());
 				
-				String dbpgFileName = String.format("%s-%d.%d.%d-%s.dbpkg",
-						manifest.getPackageName(),
-							manifest.getMajor(), manifest.getMinor(), manifest.getPatch(),
-								manifest.getPlatform());
+				String dbpgFileName = dbpmPackage.getFullName();
 				
 				File dbpgFile = new File(dbpgFileName);
 				if (dbpgFile.exists()) {
@@ -76,7 +80,8 @@ public class PackageBuilder implements Module {
 	
 	private void createPackage(String packageName) {
 		
-		byte[] buffer = new byte[1024];
+		byte[] buffer = new byte[BYTES];
+		int len;
 		try {
 			// Get all files in working directory
 			ArrayList<File> files = getDirectoryStructure(workDir.getAbsoluteFile());
@@ -93,7 +98,6 @@ public class PackageBuilder implements Module {
 				FileInputStream in = new FileInputStream(entry);
 
 				// Read content into zip file
-				int len;
 				while ((len = in.read(buffer)) > 0) {
 					zip.write(buffer, 0, len);
 				}

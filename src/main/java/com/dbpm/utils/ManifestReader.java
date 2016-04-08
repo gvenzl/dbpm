@@ -9,45 +9,31 @@
 
 package com.dbpm.utils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.json.JSONObject;
+
+import com.dbpm.repository.Package;
 
 public class ManifestReader {
 	
 	private JSONObject manifest;
+	private Package dbpmPackage;
 	
-	public ManifestReader(File manifestFile) throws IOException {
-		manifest = new JSONObject(new String(
-											Files.readAllBytes(
-													Paths.get(manifestFile.getAbsolutePath()))));
-	}
-	
-	public String getPackageName() {
-		return manifest.getString("name");
-	}
-	
-	public String getDescription() {
-		return manifest.getString("description");
-	}
-	
-	public String getPlatform() {
-		return manifest.getString("platform");
-	}
-	
-	public int getMajor() {
-		return manifest.getJSONObject("version").getInt("major");
-	}
-	
-	public int getMinor() {
-		return manifest.getJSONObject("version").getInt("minor");
-	}
-	
-	public int getPatch() {
-		return manifest.getJSONObject("version").getInt("patch");
-	}
+	public ManifestReader(String mf) throws IOException {
+		manifest = new JSONObject(mf);
+		dbpmPackage = new Package();
+		dbpmPackage.setName(manifest.getString("name"));
+		dbpmPackage.setDescrption(manifest.getString("description"));
+		dbpmPackage.setMajor(manifest.getJSONObject("version").getInt("major"));
+		dbpmPackage.setMinor(manifest.getJSONObject("version").getInt("minor"));
+		dbpmPackage.setPatch(manifest.getJSONObject("version").getInt("patch"));
+		dbpmPackage.setPlatform(manifest.getString("platform"));
 
+		// TODO: Build dependencies array
+	}
+	
+	public Package getPackage() {
+		return dbpmPackage;
+	}
 }
