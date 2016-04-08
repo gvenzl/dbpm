@@ -59,7 +59,7 @@ The manifest describes the package that is being built. It is a JSON document co
           minor: 0,
           patch: 0
         },
-        prerequisites: [
+        dependencies: [
           {
             name: "abc",
             min: {
@@ -92,7 +92,7 @@ The manifest describes the package that is being built. It is a JSON document co
         ]
     }
 
-Any prerequisites will be verified first and if not present the installation aborted!
+Any dependencies will be verified first and if not present the installation aborted!
 
 **name:** Name of the package. (100 char max)  
 **description:** Package description (4000 char max)  
@@ -103,17 +103,17 @@ Any prerequisites will be verified first and if not present the installation abo
 &nbsp;&nbsp;&nbsp;**minor:** Minor version of the package  
 &nbsp;&nbsp;&nbsp;**patch:** Path version of the package  
 
-**prerequisites:** dbpm allows you to specify prerequisite packages that have to be present before your package is installed. This is the fundamental cornerstone of modularisation. If your package depends on one or more packages, specify those dependency packages and versions here to guarantee its presence.  
+**dependencies:** dbpm allows you to specify depending packages that have to be present before your package is installed. This is the fundamental cornerstone of modularisation. If your package depends on one or more packages, specify those dependency packages and versions here to guarantee its presence.  
 &nbsp;&nbsp;&nbsp;**name:** Name of the required package to be present.  
 &nbsp;&nbsp;&nbsp;**min (mandatory):** The minimal version of the package  
 &nbsp;&nbsp;&nbsp;Only the `major` version number is required, `minor` and `patch` are optional. Whatever version is specified, dbpm will automatically check whether the version requirement is fulfilled.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**major (mandatory):** Minimum major version of the prerequisite  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**minor (optional):** Minimum minor version of the prerequisite  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**patch (optional):** Minimum patch version of the prerequisite  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**major (mandatory):** Minimum major version of the dependency  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**minor (optional):** Minimum minor version of the dependency  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**patch (optional):** Minimum patch version of the dependency  
 &nbsp;&nbsp;&nbsp;**max (optional):** The maximum version of the package. The entire set is optional but it is recommended to at least specify the `major` version component.  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**major (optional):** Maximum major version of the prerequisite  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**minor (optional):** Maximum minor version of the prerequisite  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**patch (optional):** Maximum patch version of the prerequisite
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**major (optional):** Maximum major version of the dependency  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**minor (optional):** Maximum minor version of the dependency  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**patch (optional):** Maximum patch version of the dependency
 
 ### PREINSTALL
 Any pre-installation tasks have to be specified here. There are three different variants of pre-installation tasks:  
