@@ -10,6 +10,8 @@
 package com.dbpm.config;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -39,14 +41,11 @@ public class Config {
     private static String REPOSITORY = "repo.xml";
     private static String PACKAGESTORE = "store";
     
-	private Properties  properties;
-	private String		dbpmDir;
-	private File 		configFile;
+	private Properties    properties;
+	private static String dbpmDir = System.getProperty("user.home") + "/.dbpm";
+	private static File   configFile = new File(dbpmDir + "/" + CONFIG_FILE_NAME);
 	
 	public Config() {
-		dbpmDir = System.getProperty("user.home") + "/.dbpm";
-		configFile = new File(dbpmDir + "/" + CONFIG_FILE_NAME);
-		
 		properties = new Properties();
 		properties.setProperty("platform", RepoStorage.FILE.name());
 		properties.setProperty("repository", REPOSITORY);
@@ -68,8 +67,8 @@ public class Config {
 			Logger.log("Creating configuration");
 			
 			// Create directory structure
-			buildDirectory();
-			buildConfigFile();
+			createDirectory();
+			createConfigFile();
 		
 			if (RepoStorage.FILE.name().equals(properties.getProperty("platform"))) {
 				FileRepository repo = new FileRepository(dbpmDir + "/" + REPOSITORY, dbpmDir + "/" + PACKAGESTORE);
@@ -95,9 +94,20 @@ public class Config {
 		}
 	}
 	
-	public Repository getRepository() {
-		Repository repo = null;
-		return repo;
+	public static Repository getRepository() throws IOException {
+		
+		// Load platform from config file
+		Properties props = new Properties();
+		props.load(new FileInputStream(configFile));
+		if (props.getProperty("platform").equals(RepoStorage.FILE.name())) {
+			String repo = dbpmDir + "/" + props.getProperty("repository");
+			String store = dbpmDir + "/" + props.getProperty("packagestore");
+			return new FileRepository(repo, store);
+		}
+		else {
+			// TODO: Implement DB repositories
+			return null;
+		}
 	}
 	
 	private boolean configExists() {
@@ -121,14 +131,14 @@ public class Config {
 		return new String(pbeCipher.doFinal(Base64.getDecoder().decode(password)), "UTF-8");
 	}
 	
-	private void buildDirectory() {
+	private void createDirectory() {
 		File dir = new File(dbpmDir);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
 	}
 	
-	private void buildConfigFile() throws IOException {
+	private void createConfigFile() throws IOException {
 		if (!configFile.exists()) {
 			configFile.createNewFile();
 		}
