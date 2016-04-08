@@ -29,6 +29,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.dbpm.logger.Logger;
+import com.dbpm.utils.files.FileUtils;
 
 public class FileRepository implements Repository {
 	
@@ -159,16 +160,28 @@ public class FileRepository implements Repository {
 
 	@Override
 	public boolean savePackage(Package pgk, byte[] content) {
-		File pgkFile = new File(store.getAbsolutePath() + "/" + pgk.getFullName());
-		FileOutputStream out;
+		File pkgFile = new File(store.getAbsolutePath() + "/" + pgk.getFullName());
 		try {
-			out = new FileOutputStream(pgkFile);
+			if (pkgFile.exists() && FileUtils.compareFileContentToBytess(pkgFile, content)) {
+				// File is the same, no need to write it again
+				return true;
+			}
+		} catch (IOException e1) {
+			// Ignore exception and save file again
+		}
+
+		try {
+			pkgFile.createNewFile();
+			FileOutputStream out = new FileOutputStream(pkgFile);
 			out.write(content);
 			out.close();
 			return true;
+			
 		} catch (IOException e) {
-			Logger.error("Cannot safe package!");
+			Logger.error("Cannot safe package into repository!");
 			Logger.error(e.getMessage());
+			// Delete file in case writing did go wrong, otherwise the file won't be there anyway
+			pkgFile.delete();
 			return false;
 		}
 	}

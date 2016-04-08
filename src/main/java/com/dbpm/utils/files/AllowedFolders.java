@@ -7,7 +7,7 @@
 *
 */
 
-package com.dbpm.utils.filesystem;
+package com.dbpm.utils.files;
 
 public enum AllowedFolders {
 	PREINSTALL, INSTALL, UPGRADE, ROLLBACK, DOWNGRADE, POSTINSTALL

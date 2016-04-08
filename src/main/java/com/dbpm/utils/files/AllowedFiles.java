@@ -7,7 +7,7 @@
 *
 */
 
-package com.dbpm.utils.filesystem;
+package com.dbpm.utils.files;
 
 public enum AllowedFiles {
 	SQL, SYS, CMD, PM
