@@ -11,11 +11,12 @@ package com.dbpm.repository;
 
 public class Package {
 
-	private String  name;
+	private String 	name;
+	private String 	desciption;
 	private int		major;
 	private int		minor;
 	private int		patch;
-	private String  platform;
+	private String 	platform;
 	
 	public Package(String packageName) {
 		String pgkNme = packageName.substring(0, packageName.lastIndexOf("."));
@@ -40,6 +41,12 @@ public class Package {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getDescription() {
+		return desciption;
+	}
+	public void setDescrption(String desc) {
+		desciption = desc;
 	}
 	public int getMajor() {
 		return major;
