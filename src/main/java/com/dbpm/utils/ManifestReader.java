@@ -34,48 +34,50 @@ public class ManifestReader {
 		dbpmPackage.setMinor(manifest.getJSONObject("version").getInt("minor"));
 		dbpmPackage.setPatch(manifest.getJSONObject("version").getInt("patch"));
 		dbpmPackage.setPlatform(manifest.getString("platform"));
+		dependencies = new ArrayList<Dependency>();
 
-		JSONArray packageDependencies = manifest.getJSONArray("dependencies");
-		if (packageDependencies.length() > 0) {
-			dependencies = new ArrayList<Dependency>();
-		}
+		try {
+			JSONArray packageDependencies = manifest.getJSONArray("dependencies");
 		
-		for (Object packageDept : packageDependencies) {
-			Dependency dept = new Dependency();
-			JSONObject jsonDept = (JSONObject) packageDept;
-			dept.setName(jsonDept.getString("name"));
+			for (Object packageDept : packageDependencies) {
+				Dependency dept = new Dependency();
+				JSONObject jsonDept = (JSONObject) packageDept;
+				dept.setName(jsonDept.getString("name"));
 			
-			JSONObject minDept = jsonDept.getJSONObject("min");
+				JSONObject minDept = jsonDept.getJSONObject("min");
 			
-			int minor = 0;
-			int patch = 0;
+				int minor = 0;
+				int patch = 0;
 			
-			try {
-				minor = minDept.getInt("minor");
-				patch = minDept.getInt("patch");
-			} catch(JSONException e) {
-				// Ignore as minor and patch are allowed to be null
-			}
-			// Major is mandatory!
-			dept.setMin(minDept.getInt("major"), minor, patch);
-			
-			try {
-				JSONObject maxDept = jsonDept.getJSONObject("max");
-				minor = patch = Integer.MAX_VALUE;
-				
 				try {
-					minor = maxDept.getInt("minor");
-					patch = maxDept.getInt("patch");
-				} catch (JSONException e) {
-					// Ignore as minor and patch can be optional
+					minor = minDept.getInt("minor");
+					patch = minDept.getInt("patch");
+				} catch(JSONException e) {
+					// Ignore as minor and patch are allowed to be null
 				}
 				// Major is mandatory!
-				dept.setMax(maxDept.getInt("major"), minor, patch);
-			} catch (JSONException e) {
-				// Ignore as no max value is allowed
-			}
+				dept.setMin(minDept.getInt("major"), minor, patch);
 			
-			dependencies.add(dept);
+				try {
+					JSONObject maxDept = jsonDept.getJSONObject("max");
+					minor = patch = Integer.MAX_VALUE;
+				
+					try {
+						minor = maxDept.getInt("minor");
+						patch = maxDept.getInt("patch");
+					} catch (JSONException e) {
+						// Ignore as minor and patch can be optional
+					}
+					// Major is mandatory!
+					dept.setMax(maxDept.getInt("major"), minor, patch);
+				} catch (JSONException e) {
+					// Ignore as no max value is allowed
+				}
+			
+				dependencies.add(dept);
+			}
+		} catch (JSONException e) {
+			// Ignore as a package may not have dependencies
 		}
 		
 	}
