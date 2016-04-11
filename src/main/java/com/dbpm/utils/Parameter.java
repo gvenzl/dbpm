@@ -20,5 +20,6 @@ public final class Parameter {
 	public static String DBNAME 		= "-dbName";
 	public static String VERBOSE		= "-v";
 	public static String PLATFORM 		= "-platform";
+	public static String PACKAGEFILE	= "-file";
 
 }
