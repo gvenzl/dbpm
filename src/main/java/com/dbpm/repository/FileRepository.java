@@ -12,9 +12,9 @@ package com.dbpm.repository;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -26,7 +26,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.dbpm.logger.Logger;
 import com.dbpm.utils.files.FileUtils;
@@ -43,6 +42,7 @@ public class FileRepository implements Repository {
 	
 	@Override
 	public boolean checkRepo() {
+		//TODO: Implement repository verification
 		return true;
 	}
 
@@ -86,39 +86,35 @@ public class FileRepository implements Repository {
 
 	@Override
 	public boolean writeEntry(String db, String schema, Package pgk) {
-		try {
-			Document doc = openRepository();
-			
-			Element root = doc.getDocumentElement();
-			Element dbElem = null;
-			Element schElem = null;
-			
-			// Get database entry
-			dbElem = findNode(root, "database", db);
-			// If database entry doesn't exist yet, create it
-			if (null == dbElem) {
-				dbElem = createTag(doc, "database", db);
-				root.appendChild(dbElem);
-			}
-			
-			// Get schema entry
-			schElem = findNode(dbElem, "schema", schema);
-			if (null == schElem) {
-				schElem = createTag(doc, "schema", schema);
-				dbElem.appendChild(schElem);
-			}
-			
-			Element pgkElem = createTag(doc, "package", null);
-			pgkElem.appendChild(doc.createTextNode(pgk.getFullName()));
-			schElem.appendChild(pgkElem);
-							
-			return saveRepository(doc);
-			
-		} catch (SAXException | IOException | ParserConfigurationException e) {
-			Logger.error("Cannot open repository file");
-			Logger.error(e.getMessage());
+		Document doc = openRepository();
+		if (null == doc) {
+			return false;
 		}
-		return false;
+		
+		Element root = doc.getDocumentElement();
+		Element dbElem = null;
+		Element schElem = null;
+			
+		// Get database entry
+		dbElem = findNode(root, "database", db);
+		// If database entry doesn't exist yet, create it
+		if (null == dbElem) {
+			dbElem = createTag(doc, "database", db);
+			root.appendChild(dbElem);
+		}
+			
+		// Get schema entry
+		schElem = findNode(dbElem, "schema", schema);
+		if (null == schElem) {
+			schElem = createTag(doc, "schema", schema);
+			dbElem.appendChild(schElem);
+		}
+			
+		Element pgkElem = createTag(doc, "package", null);
+		pgkElem.appendChild(doc.createTextNode(pgk.getFullName()));
+		schElem.appendChild(pgkElem);
+							
+		return saveRepository(doc);
 	}
 	
 	private Element findNode(Element root, String nodeName, String name) {
@@ -131,8 +127,15 @@ public class FileRepository implements Repository {
 		return null;
 	}
 	
-	private Document openRepository() throws SAXException, IOException, ParserConfigurationException {
-		return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(repo);
+	private Document openRepository() {
+		try {
+			return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(repo);
+		}
+		catch (Exception e) {
+			Logger.error("Cannot open repository");
+			Logger.error(e.getMessage());
+			return null;
+		}
 	}
 	
 	private boolean saveRepository(Document doc) {
@@ -187,8 +190,13 @@ public class FileRepository implements Repository {
 	}
 
 	@Override
-	public boolean isPackageInstalled(String dbName, String schemaName, Package pgk) throws SAXException, IOException, ParserConfigurationException {
+	public boolean isPackageInstalled(String dbName, String schemaName, Package pgk) {
 		Document doc = openRepository();
+		
+		if (null == doc) {
+			// Cannot open repository, mark package as uninstalled and reinstall
+			return false;
+		}
 		
 		Element database = findNode(doc.getDocumentElement(), "database", dbName);
 		// Database is new
@@ -209,6 +217,25 @@ public class FileRepository implements Repository {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean verifyDependencies(String dbName, String schema, ArrayList<Dependency> dependencies) {
+		if (null == dependencies || dependencies.isEmpty()) {
+			return true;
+		}
+
+		Document doc = openRepository();
+		
+		if (null == doc) {
+			// Cannot read repository, abort
+			return false;
+		}
+		// Check all dependencies
+		for (Dependency dept : dependencies) {
+			//TODO: Verify dependencies
+		}
+		return true;
 	}
 
 }
