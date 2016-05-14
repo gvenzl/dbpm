@@ -87,24 +87,23 @@ public class Installer implements Module {
 		if (null == fileName) {
 			dir = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
 			fileName = "*.dbpgk";
+			try {
+				DirectoryStream<Path> stream = Files.newDirectoryStream(dir, fileName);
+				// Install each dbpm package in the current user directory
+				// TODO: Build dependency tree instead and call install with right order
+				for (Path path : stream) {
+					installFile(new File(path.getParent() + File.separator + path.getFileName()));
+				}
+				stream.close();
+			} catch (IOException e) {
+				Logger.error("Cannot read package file!");
+				Logger.error(e.getMessage());
+			}
 		}
 		else {
-			dir = FileSystems.getDefault().getPath(fileName.substring(0, fileName.lastIndexOf(File.separator)));
-			fileName = fileName.substring(fileName.lastIndexOf(File.separator)+1);
+			installFile(new File(fileName));
 		}
 		
-		try {
-			DirectoryStream<Path> stream = Files.newDirectoryStream(dir, fileName);
-			// Install each dbpm package in the current user directory
-			// TODO: Build dependency tree instead and call install with right order
-			for (Path path : stream) {
-				installFile(new File(path.getParent() + File.separator + path.getFileName()));
-			}
-			stream.close();
-		} catch (IOException e) {
-			Logger.error("Cannot read package file!");
-			Logger.error(e.getMessage());
-		}
 	}
 	
 	/**
