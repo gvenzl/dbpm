@@ -160,8 +160,8 @@ Any post-installation tasks have to be specified here. There are three different
     command is on of:
     * build
     * config
-    * install package1, [package 2]
-    * uninstall package1, [package2]
+    * install package1, [package2, ...]
+    * uninstall package1, [package2, ...]
         
     build
         The build process will build a dbpm package for distribution. dbpm has to be executed within the package root folder (see Package format).
@@ -174,20 +174,18 @@ Any post-installation tasks have to be specified here. There are three different
         file             Will store the repository information within a file on disk (default)
         
         db               Will store the repository information within a Database
+        -v               Verbose output
         -platform        The Database platform (oracle, mysql, postgres)
         -user            Repository username (has to exist)
         -password        Repository user password
         -host            The host where the Database is running on
         -port            The port of the Database
         -dbName          The Database name for the repository to be stored at
-
-        -v               Verbose output
     
-    install
+    install [options] package1, [package2, ...]
         The installation process will install a given package into the Database.
 
         -v               Verbose output    
-        -file            Specify the package file to install (if no file is specified, all .dbpkg files in the current directory will be installed)
         -user            Database username/schema where the package should be installed (has to exist)
         -password        Database user password
         -adminUser       A privileged Database user for executing the ".sys" scripts within the package, if present. If there are no ".sys" scripts within the package this user can be omitted.
@@ -196,7 +194,7 @@ Any post-installation tasks have to be specified here. There are three different
         -port            The port of the Database
         -dbName          The Database name for the repository to be stored at
           
-    uninstall
+    uninstall package1, [package2, ...]
         The uninstallation process will uninstall a given package from a schema.
     
         -v               Verbose output
