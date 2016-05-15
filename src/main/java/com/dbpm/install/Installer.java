@@ -31,14 +31,14 @@ import com.dbpm.utils.Parameter;
  */
 public class Installer implements Module {
 	
-	private String fileName;
-	private String userName;
-	private String password;
-	private String adminUser;
-	private String adminPassword;
-	private String host;
-	private String port;
-	private String dbName;
+	private File	packageFile;
+	private String	userName;
+	private String	password;
+	private String	adminUser;
+	private String	adminPassword;
+	private String	host;
+	private String	port;
+	private String	dbName;
 	
 	/**
 	 * Constructs an Installer object.
@@ -48,10 +48,7 @@ public class Installer implements Module {
 	public Installer (String[] args) throws IllegalArgumentException {
 		// Ignore first parameter as this one was already checked by DBPM in order to call installer
 		for (int i=1;i<args.length;i++) {
-			if (args[i].equals(Parameter.PACKAGEFILE)) {
-				fileName = args[++i];
-			}
-			else if (args[i].equals(Parameter.USER)) {
+			if (args[i].equals(Parameter.USER)) {
 				userName = args[++i];
 			}
 			else if (args[i].equals(Parameter.PASSWORD)) {
@@ -75,7 +72,20 @@ public class Installer implements Module {
 			// Ignore verbose as already set globally by DBPM
 			else if (args[i].equals(Parameter.VERBOSE)) { }
 			else {
-				throw new IllegalArgumentException(args[i] + " is not a valid argument for install");
+				// Unknown parameter
+				if (args[i].charAt(0) == '-') {
+					throw new IllegalArgumentException(args[i] + " is not a valid argument for install");
+				}
+				else {
+					//TODO: check if a file exists and use that one
+					packageFile = new File(args[i]);
+					if (!packageFile.exists()) {
+						packageFile = new File(args[i] + ".dbpkg");
+						if (!packageFile.exists()) {
+							throw new IllegalArgumentException(args[i] + " is not a valid file name!");
+						}
+					}
+				}
 			}
 		}
 	}
@@ -84,11 +94,10 @@ public class Installer implements Module {
 	public void run() {
 		Path dir;
 		// if no file has been passed on, install all dbpkg files
-		if (null == fileName) {
+		if (null == packageFile) {
 			dir = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
-			fileName = "*.dbpgk";
 			try {
-				DirectoryStream<Path> stream = Files.newDirectoryStream(dir, fileName);
+				DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.dbpkg");
 				// Install each dbpm package in the current user directory
 				// TODO: Build dependency tree instead and call install with right order
 				for (Path path : stream) {
@@ -101,7 +110,7 @@ public class Installer implements Module {
 			}
 		}
 		else {
-			installFile(new File(fileName));
+			installFile(packageFile);
 		}
 		
 	}

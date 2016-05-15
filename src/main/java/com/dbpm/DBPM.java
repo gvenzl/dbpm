@@ -77,7 +77,7 @@ public class DBPM {
 			System.out.println("    -port            The port of the Database");
 			System.out.println("    -dbName          The Database name for the repository to be stored at");
 			System.out.println("");
-			System.out.println("uninstall package1, [package2, ...]");
+			System.out.println("uninstall [options] package1, [package2, ...]");
 			System.out.println("    The uninstallation process will uninstall a given package from a schema.");
 			System.out.println("");
 			System.out.println("    -v               Verbose output");

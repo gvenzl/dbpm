@@ -194,7 +194,7 @@ Any post-installation tasks have to be specified here. There are three different
         -port            The port of the Database
         -dbName          The Database name for the repository to be stored at
           
-    uninstall package1, [package2, ...]
+    uninstall [options] package1, [package2, ...]
         The uninstallation process will uninstall a given package from a schema.
     
         -v               Verbose output
