@@ -194,7 +194,7 @@ Any post-installation tasks have to be specified here. There are three different
         -port            The port of the Database
         -dbName          The Database name for the repository to be stored at
           
-    uninstall [options] package1, [package2, ...]
+    uninstall [options] ' package1, [package2, ...]
         The uninstallation process will uninstall a given package from a schema.
     
         -v               Verbose output
@@ -218,7 +218,7 @@ dbpm has a repository in which it stores a copy of packages as all as and the in
     <repository>
       <database name="Dev">
         <schema name="QA12">
-          <package>Starter-1.0.0-oracle.dbpgk</package>
+          <package>Starter-1.0.0-oracle.dbpkg</package>
         </schema>
       </database>
     </repository>
