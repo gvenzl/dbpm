@@ -20,9 +20,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.dbpm.DBPM;
+
 public class FileRepositoryTest{
 
-	static String TESTPACKAGE = "Testpackage-1.0.0-oracle.dbpgk";
+	static String TESTPACKAGE = "Testpackage-1.0.0-oracle" + DBPM.PKG_FILE_EXTENSION;
 	String repoName = "testrepo.xml";
 	String storeName = "store";
 	
@@ -65,7 +67,7 @@ public class FileRepositoryTest{
 		assertTrue(repo.writeEntry("testDB", "TestSchema", new Package(TESTPACKAGE)));
 		assertFalse(repo.isPackageInstalled("testDB", "OtherTestSchema", new Package(TESTPACKAGE)));
 		// Schema and DB exist but package does not exist
-		assertFalse(repo.isPackageInstalled("testDB", "TestSchema", new Package("dummy-9.9.9-mysql.dbpgk")));
+		assertFalse(repo.isPackageInstalled("testDB", "TestSchema", new Package("dummy-9.9.9-mysql" + DBPM.PKG_FILE_EXTENSION)));
 	}
 	
 	@Test

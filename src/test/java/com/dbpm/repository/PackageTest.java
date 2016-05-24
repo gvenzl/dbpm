@@ -13,11 +13,13 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.dbpm.DBPM;
+
 public class PackageTest {
 
 	@Test
 	public void test_PackageConstructor() {
-		String testName = "Test-1.2.3-oracle.dbpgk";
+		String testName = "Test-1.2.3-oracle" + DBPM.PKG_FILE_EXTENSION;
 		Package testPgk = new Package(testName);
 		
 		assertEquals("Test", testPgk.getName());

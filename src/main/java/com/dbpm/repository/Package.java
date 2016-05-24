@@ -9,6 +9,8 @@
 
 package com.dbpm.repository;
 
+import com.dbpm.DBPM;
+
 public class Package {
 
 	private String 	name;
@@ -33,7 +35,7 @@ public class Package {
 	}
 
 	public String getFullName() {
-		return name + "-" + major + "." + minor + "." + patch + "-" +  platform + ".dbpgk";
+		return name + "-" + major + "." + minor + "." + patch + "-" +  platform + DBPM.PKG_FILE_EXTENSION;
 	}
 	
 	public String getName() {
