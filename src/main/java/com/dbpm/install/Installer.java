@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.dbpm.DBPM;
 import com.dbpm.Module;
 import com.dbpm.config.Config;
 import com.dbpm.logger.Logger;
@@ -77,10 +78,9 @@ public class Installer implements Module {
 					throw new IllegalArgumentException(args[i] + " is not a valid argument for install");
 				}
 				else {
-					//TODO: check if a file exists and use that one
 					packageFile = new File(args[i]);
 					if (!packageFile.exists()) {
-						packageFile = new File(args[i] + ".dbpkg");
+						packageFile = new File(args[i] + DBPM.PKG_FILE_EXTENSION);
 						if (!packageFile.exists()) {
 							throw new IllegalArgumentException(args[i] + " is not a valid file name!");
 						}
@@ -97,7 +97,7 @@ public class Installer implements Module {
 		if (null == packageFile) {
 			dir = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
 			try {
-				DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.dbpkg");
+				DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*" + DBPM.PKG_FILE_EXTENSION);
 				// Install each dbpm package in the current user directory
 				// TODO: Build dependency tree instead and call install with right order
 				for (Path path : stream) {
@@ -116,7 +116,7 @@ public class Installer implements Module {
 	}
 	
 	/**
-	 * Installs a package in the database
+	 * Installs a package in the database.
 	 * @param packageFile The package to be installed
 	 * @return True if and only if the installation was successful, otherwise false
 	 */
@@ -146,13 +146,14 @@ public class Installer implements Module {
 				return false;
 			}
 			else {
-				pkgReader.getManifest().getDependencies();
-				// TODO: Install package
+				pkgReader.getInstallFiles();
+				
 				return true;
 			}
 		} catch(Exception e) {
 			Logger.error("Cannot install package!");
 			Logger.error(e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 	}
