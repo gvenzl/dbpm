@@ -2,7 +2,7 @@
 Database Package Manager (by gvenzl - 2016)
 
 ## Overview
-Database Package Manager lets you create, distribute and install packages for Databases. The idea is to provide similar functionality to package database code just like binaries in Unix environments. dbpm is written in Java, making it easy to run it on any platform and against any database that complies with the JDBC standard.
+Database Package Manager lets you create, distribute and install packages for Databases. The idea is to provide similar functionality to package database code just like binaries in Unix environments. dbpm is written in Java, making it easy to run it on any platform and against any Database that complies with the JDBC standard.
 
 The dbpm package format is **NAME-MAJOR.MINOR.PATH-PLATFORM.dbpkg**  
 
@@ -168,7 +168,7 @@ Any post-installation tasks have to be specified here. There are three different
         
         -v               Verbose output
     
-    config [file | db]
+    config [file | db | remove]
         The configuration will setup the initial repository needed for dbpm. By default, all packages and information will be stored on disk.
     
         file             Will store the repository information within a file on disk (default)
@@ -181,6 +181,8 @@ Any post-installation tasks have to be specified here. There are three different
         -host            The host where the Database is running on
         -port            The port of the Database
         -dbName          The Database name for the repository to be stored at
+        
+        remove           Will remove the entire configuration. Packages that have been installed remain installed.
     
     install [options] package1, [package2, ...]
         The installation process will install a given package into the Database.

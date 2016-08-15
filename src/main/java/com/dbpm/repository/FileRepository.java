@@ -191,8 +191,8 @@ public class FileRepository implements Repository {
 
 	@Override
 	public boolean isPackageInstalled(String dbName, String schemaName, Package pgk) {
-		Document doc = openRepository();
 		
+		Document doc = openRepository();
 		if (null == doc) {
 			// Cannot open repository, mark package as uninstalled and reinstall
 			return false;
@@ -238,4 +238,10 @@ public class FileRepository implements Repository {
 		return true;
 	}
 
+	@Override
+	public boolean remove() {
+		store.delete();
+		repo.delete();
+		return true;
+	}
 }

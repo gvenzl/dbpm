@@ -73,7 +73,7 @@ public class Config {
 			if (RepoStorage.FILE.name().equals(properties.getProperty("platform"))) {
 				FileRepository repo = new FileRepository(dbpmDir + "/" + REPOSITORY, dbpmDir + "/" + PACKAGESTORE);
 				if (!repo.createRepo()) {
-					Logger.log("Could not initialize the configuration");
+					Logger.log("Could not initialize the configuration.");
 					return false;
 				}
 			}
@@ -129,6 +129,27 @@ public class Config {
 		Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
 		pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
 		return new String(pbeCipher.doFinal(Base64.getDecoder().decode(password)), "UTF-8");
+	}
+	
+	public boolean removeConfiguration() {
+		try {
+			Repository repo = getRepository();
+			if (!repo.remove()) {
+				return false;
+			}
+			configFile.delete();
+			File repoDir = new File(dbpmDir);
+			for (File file : repoDir.listFiles()) {
+				file.delete();
+			}
+			new File(dbpmDir).delete();
+			return true;
+			
+		} catch (IOException e) {
+			Logger.error(e.getMessage());
+			return false;
+		}
+		
 	}
 	
 	private void createDirectory() {

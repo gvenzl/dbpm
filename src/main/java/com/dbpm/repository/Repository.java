@@ -56,4 +56,10 @@ public interface Repository {
 	 * @return True if and only if all dependencies could be verified, otherwise false
 	 */
 	public boolean verifyDependencies(String db, String schema, ArrayList<Dependency> dependencies);
+	
+	/**
+	 * Removes the configuration
+	 * @return True if the removal was successful, otherwise false
+	 */
+	public boolean remove();
 }

@@ -16,6 +16,7 @@ import com.dbpm.utils.Parameter;
 
 public class Configurator implements Module {
 
+	private boolean remove = false;
 	private boolean dbStorage = false;
 	private String user;
 	private String password;
@@ -48,7 +49,7 @@ public class Configurator implements Module {
 					}
 					
 					if (!supported) {
-						throw new IllegalArgumentException("Unsupported platform");
+						throw new IllegalArgumentException("Unsupported platform.");
 					}
 				}
 				// Ignore verbose as already set in DBPM.
@@ -65,6 +66,9 @@ public class Configurator implements Module {
 				}
 			}
 		}
+		else if (args[1].equals("remove")) {
+			remove = true;
+		}
 	}
 	
 	@Override
@@ -72,13 +76,18 @@ public class Configurator implements Module {
 		Config config;
 		
 		try {
-			if (!dbStorage) {
-				config = new Config();
+			if (remove) {
+				new Config().removeConfiguration();
 			}
 			else {
-				config = new Config(platform, user, password, host, port, dbName);
+				if (!dbStorage) {
+					config = new Config();
+				}
+				else {
+					config = new Config(platform, user, password, host, port, dbName);
+				}
+				config.createConfiguration();
 			}
-			config.createConfiguration();
 		}
 		catch (Exception e) {
 			Logger.error(e.getMessage());
