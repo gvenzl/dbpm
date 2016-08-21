@@ -28,7 +28,7 @@ In order to build a package archive (.dbpkg) the package source folder must have
     |- UPGRADE
     |--- 001.name.sql
     |--- 002.name.sql
-    |--- 003.name.sql
+    |--- NNN.name.sql
     |- INSTALL
     |--- 001.name.sql
     |--- 002.name.sql
