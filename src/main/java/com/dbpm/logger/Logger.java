@@ -9,8 +9,10 @@
 
 package com.dbpm.logger;
 
-public final class Logger {
+import java.io.Console;
 
+public final class Logger {
+	
 	public static void log(String message) {
 		System.out.println(message);
 	}
@@ -24,5 +26,14 @@ public final class Logger {
 		if (Verbose.getInstance().isVerbose()) {
 			System.out.println(message);
 		}
+	}
+	
+	public static String prompt(String message, String defaultInput) {
+		System.out.println(message + "[" + defaultInput + "]:");
+		Console console = System.console();
+		if (null == console) {
+			return defaultInput;
+		}
+		return console.readLine();
 	}
 }

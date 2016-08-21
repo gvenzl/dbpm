@@ -98,7 +98,7 @@ public class Installer implements Module {
 			dir = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
 			try {
 				DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*" + DBPM.PKG_FILE_EXTENSION);
-				// Install each dbpm package in the current user directory
+				// Install each dbpm package in the current working directory
 				// TODO: Build dependency tree instead and call install with right order
 				for (Path path : stream) {
 					installFile(new File(path.getParent() + File.separator + path.getFileName()));
@@ -132,8 +132,12 @@ public class Installer implements Module {
 
 			// Save package to repository
 			if (!repo.savePackage(pkgReader.getPackage(), Files.readAllBytes(Paths.get(packageFile.getAbsolutePath())))) {
-				// TODO: Should there be an option to ignore this error?
-				return false;
+				String defaultInput = "y";
+				String prompt = Logger.prompt("Package couldn't be saved in repository, continue without saving", defaultInput);
+				if (!prompt.equalsIgnoreCase(defaultInput)) {
+					return false;
+				}
+				// TODO: Implement retry saving package
 			}
 
 			// Check whether package is already installed
