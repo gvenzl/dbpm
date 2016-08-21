@@ -132,12 +132,29 @@ public class Installer implements Module {
 
 			// Save package to repository
 			if (!repo.savePackage(pkgReader.getPackage(), Files.readAllBytes(Paths.get(packageFile.getAbsolutePath())))) {
-				String defaultInput = "y";
-				String prompt = Logger.prompt("Package couldn't be saved in repository, continue without saving", defaultInput);
-				if (!prompt.equalsIgnoreCase(defaultInput)) {
-					return false;
+				boolean retry = true;
+				while (retry) {
+					switch (Logger.prompt("Package couldn't be saved in repository, continue without saving", "y")) {
+					case "n": { 
+						System.out.println("User response \"n\", abort!");
+						return false;
+					}
+					case "y": {
+						System.out.println("User response \"y\", continuing...");
+						retry = false;
+						break;
+					}
+					case "r": {
+						// Retry save, if it works continue
+						System.out.println("Retrying...");
+						if (repo.savePackage(pkgReader.getPackage(), Files.readAllBytes(Paths.get(packageFile.getAbsolutePath())))) {
+							retry = false;
+						}
+						break;
+					}
 				}
-				// TODO: Implement retry saving package
+					
+				}
 			}
 
 			// Check whether package is already installed

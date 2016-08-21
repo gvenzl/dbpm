@@ -29,11 +29,19 @@ public final class Logger {
 	}
 	
 	public static String prompt(String message, String defaultInput) {
-		System.out.println(message + "[" + defaultInput + "]:");
 		Console console = System.console();
 		if (null == console) {
 			return defaultInput;
 		}
-		return console.readLine();
+		
+		while (true) {
+			System.out.println(message + "([y(es)]|[n(o)]|[r(etry)]):");
+			// Only consider first character and make it lowercase.
+			String response = console.readLine().substring(0, 1).toLowerCase();
+			// No character passed (just hit enter) -> Default Input
+			if (null == response) { return defaultInput; }
+			// Response accepted, return response
+			if ("ynr".indexOf(response) != -1) { return response; }
+		}
 	}
 }

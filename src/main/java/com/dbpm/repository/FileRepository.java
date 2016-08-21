@@ -181,7 +181,7 @@ public class FileRepository implements Repository {
 			return true;
 			
 		} catch (IOException e) {
-			Logger.error("Cannot safe package into repository!");
+			Logger.error("Cannot save package in repository!");
 			Logger.error(e.getMessage());
 			// Delete file in case writing did go wrong, otherwise the file won't be there anyway
 			pkgFile.delete();
