@@ -16,6 +16,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import com.dbpm.DBPM;
 import com.dbpm.Module;
@@ -78,6 +79,7 @@ public class Installer implements Module {
 					throw new IllegalArgumentException(args[i] + " is not a valid argument for install");
 				}
 				else {
+					// TODO: If file does not exist, check repository for file
 					packageFile = new File(args[i]);
 					if (!packageFile.exists()) {
 						packageFile = new File(args[i] + DBPM.PKG_FILE_EXTENSION);
@@ -167,8 +169,14 @@ public class Installer implements Module {
 				return false;
 			}
 			else {
-				pkgReader.getInstallFiles();
+				HashMap<String, String> installFiles = pkgReader.getInstallFiles();
 				
+				// TODO: Install file
+				
+				// Write entry into repository
+				if (!repo.writeEntry(dbName, userName, pkgReader.getPackage())) {
+					Logger.error("Couldn't save install information in repository!");
+				}
 				return true;
 			}
 		} catch(Exception e) {

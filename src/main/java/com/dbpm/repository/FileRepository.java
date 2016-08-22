@@ -212,9 +212,8 @@ public class FileRepository implements Repository {
 		
 		NodeList pkgList = schema.getChildNodes();
 		for(int i=0; i<pkgList.getLength();i++) {
+			// getFullName includes version number as well
 			if (pkgList.item(i).getTextContent().equals(pkg.getFullName())) {
-				// TODO: Also compare version number
-				
 				return true;
 			}
 		}
