@@ -137,48 +137,48 @@ public class Installer implements Module {
 				boolean retry = true;
 				while (retry) {
 					switch (Logger.prompt("Package couldn't be saved in repository, continue without saving", "y")) {
-					case "n": { 
-						System.out.println("User response \"n\", abort!");
-						return false;
-					}
-					case "y": {
-						System.out.println("User response \"y\", continuing...");
-						retry = false;
-						break;
-					}
-					case "r": {
-						// Retry save, if it works continue
-						System.out.println("Retrying...");
-						if (repo.savePackage(pkgReader.getPackage(), Files.readAllBytes(Paths.get(packageFile.getAbsolutePath())))) {
-							retry = false;
+						case "n": { 
+							System.out.println("User response \"n\", abort.");
+							return false;
 						}
-						break;
+						case "y": {
+							System.out.println("User response \"y\", continuing...");
+							retry = false;
+							break;
+						}
+						case "r": {
+							// Retry save, if it works continue
+							System.out.println("Retrying...");
+							if (repo.savePackage(pkgReader.getPackage(), Files.readAllBytes(Paths.get(packageFile.getAbsolutePath())))) {
+								retry = false;
+							}
+							break;
+						}
 					}
-				}
-					
 				}
 			}
 
-			// Check whether package is already installed
+			Logger.verbose("Check whether package is already installed.");
 			if (repo.isPackageInstalled(dbName, userName, pkgReader.getPackage())) {
 				Logger.log("Package is already installed");
 				return true;
 			}
-			else if (!repo.verifyDependencies(dbName, userName, pkgReader.getManifest().getDependencies())) {
+			
+			Logger.verbose("Check whether dependencies are already installed.");
+			if (!repo.verifyDependencies(dbName, userName, pkgReader.getManifest().getDependencies())) {
 				Logger.error("Dependencies not installed!");
 				return false;
 			}
-			else {
-				HashMap<String, String> installFiles = pkgReader.getInstallFiles();
+
+			HashMap<String, String> installFiles = pkgReader.getInstallFiles();
 				
-				// TODO: Install file
+			// TODO: Install file
 				
-				// Write entry into repository
-				if (!repo.writeEntry(dbName, userName, pkgReader.getPackage())) {
-					Logger.error("Couldn't save install information in repository!");
-				}
-				return true;
+			Logger.verbose("Save package information in repository.");
+			if (!repo.writeEntry(dbName, userName, pkgReader.getPackage())) {
+				Logger.error("Could not save install information in repository!");
 			}
+			return true;
 		} catch(Exception e) {
 			Logger.error("Cannot install package!");
 			Logger.error(e.getMessage());
