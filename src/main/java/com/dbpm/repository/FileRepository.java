@@ -85,7 +85,7 @@ public class FileRepository implements Repository {
 	}
 
 	@Override
-	public boolean writeEntry(String db, String schema, Package pgk) {
+	public boolean writeEntry(String db, String schema, Package pkg) {
 		Document doc = openRepository();
 		if (null == doc) {
 			return false;
@@ -110,9 +110,9 @@ public class FileRepository implements Repository {
 			dbElem.appendChild(schElem);
 		}
 			
-		Element pgkElem = createTag(doc, "package", null);
-		pgkElem.appendChild(doc.createTextNode(pgk.getFullName()));
-		schElem.appendChild(pgkElem);
+		Element pkgElem = createTag(doc, "package", null);
+		pkgElem.appendChild(doc.createTextNode(pkg.getFullName()));
+		schElem.appendChild(pkgElem);
 							
 		return saveRepository(doc);
 	}
@@ -162,8 +162,8 @@ public class FileRepository implements Repository {
 	}
 
 	@Override
-	public boolean savePackage(Package pgk, byte[] content) {
-		File pkgFile = new File(store.getAbsolutePath() + "/" + pgk.getFullName());
+	public boolean savePackage(Package pkg, byte[] content) {
+		File pkgFile = new File(store.getAbsolutePath() + "/" + pkg.getFullName());
 		try {
 			if (pkgFile.exists() && FileUtils.compareFileContentToBytess(pkgFile, content)) {
 				// File is the same, no need to write it again
@@ -190,7 +190,7 @@ public class FileRepository implements Repository {
 	}
 
 	@Override
-	public boolean isPackageInstalled(String dbName, String schemaName, Package pgk) {
+	public boolean isPackageInstalled(String dbName, String schemaName, Package pkg) {
 		
 		Document doc = openRepository();
 		if (null == doc) {
@@ -212,7 +212,9 @@ public class FileRepository implements Repository {
 		
 		NodeList pkgList = schema.getChildNodes();
 		for(int i=0; i<pkgList.getLength();i++) {
-			if (pkgList.item(i).getTextContent().equals(pgk.getFullName())) {
+			if (pkgList.item(i).getTextContent().equals(pkg.getFullName())) {
+				// TODO: Also compare version number
+				
 				return true;
 			}
 		}
@@ -232,8 +234,8 @@ public class FileRepository implements Repository {
 			return false;
 		}
 		// Check all dependencies
-		for (Dependency dept : dependencies) {
-			//TODO: Verify dependencies
+		for (Dependency depend : dependencies) {
+			// TODO: Verify dependencies
 		}
 		return true;
 	}

@@ -26,27 +26,27 @@ public interface Repository {
 	 * Writes a new entry into the repository
 	 * @param db The Database name
 	 * @param schema The schema name
-	 * @param pgk The package 
+	 * @param pkg The package 
 	 * @return
 	 */
-	public boolean writeEntry (String db, String schema, Package pgk);
+	public boolean writeEntry (String db, String schema, Package pkg);
 	
 	/**
 	 * Saves a package into the repository
-	 * @param pgk The package to be saved
+	 * @param pkg The package to be saved
 	 * @param content The content of the physical package
 	 * @return True if the package could be saved, otherwise false
 	 */
-	public boolean savePackage(Package pgk, byte[] content);
+	public boolean savePackage(Package pkg, byte[] content);
 	
 	/**
 	 * Checks whether a package is already installed in a given environment
 	 * @param db The Database name of where the package should be installed
 	 * @param schema The schema name of where the package should be installed
-	 * @param pgk The package which should be installed
+	 * @param pkg The package which should be installed
 	 * @return True if the package is already installed, otherwise false
 	 */
-	public boolean isPackageInstalled(String db, String schema, Package pgk);
+	public boolean isPackageInstalled(String db, String schema, Package pkg);
 
 	/**
 	 * Verifies whether given dependencies of the package are installed

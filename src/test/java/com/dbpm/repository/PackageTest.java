@@ -20,22 +20,22 @@ public class PackageTest {
 	@Test
 	public void test_PackageConstructor() {
 		String testName = "Test-1.2.3-oracle" + DBPM.PKG_FILE_EXTENSION;
-		Package testPgk = new Package(testName);
+		Package testPkg = new Package(testName);
 		
-		assertEquals("Test", testPgk.getName());
-		assertEquals(1, testPgk.getMajor());
-		assertEquals(2, testPgk.getMinor());
-		assertEquals(3, testPgk.getPatch());
-		assertEquals("oracle", testPgk.getPlatform());
+		assertEquals("Test", testPkg.getName());
+		assertEquals(1, testPkg.getMajor());
+		assertEquals(2, testPkg.getMinor());
+		assertEquals(3, testPkg.getPatch());
+		assertEquals("oracle", testPkg.getPlatform());
 		
-		assertEquals(testName, testPgk.getFullName());
+		assertEquals(testName, testPkg.getFullName());
 	}
 	
 	@Test
 	public void test_Name() {
-		Package pgk = new Package();
-		pgk.setName("name");
-		assertEquals("name", pgk.getName());
+		Package pkg = new Package();
+		pkg.setName("name");
+		assertEquals("name", pkg.getName());
 	}
 	
 	@Test
