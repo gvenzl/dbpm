@@ -32,6 +32,11 @@ public class Dependency {
 		public int getPatch() {
 			return patch;
 		}
+		
+		@Override
+		public String toString() {
+			return major + "." + minor + "." + patch;
+		}
 
 	}
 	

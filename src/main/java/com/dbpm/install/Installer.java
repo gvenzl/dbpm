@@ -160,13 +160,12 @@ public class Installer implements Module {
 
 			Logger.verbose("Check whether package is already installed.");
 			if (repo.isPackageInstalled(dbName, userName, pkgReader.getPackage())) {
-				Logger.log("Package is already installed");
+				Logger.log("Package is already installed.");
 				return true;
 			}
 			
 			Logger.verbose("Check whether dependencies are already installed.");
 			if (!repo.verifyDependencies(dbName, userName, pkgReader.getManifest().getDependencies())) {
-				Logger.error("Dependencies not installed!");
 				return false;
 			}
 

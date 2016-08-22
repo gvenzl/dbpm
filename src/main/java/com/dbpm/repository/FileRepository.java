@@ -34,6 +34,7 @@ public class FileRepository implements Repository {
 	
 	private File repo;
 	private File store;
+	private Document repoDoc;
 	
 	public FileRepository(String repo, String store) {
 		this.repo = new File(repo);
@@ -55,13 +56,12 @@ public class FileRepository implements Repository {
 		}
 		try {
 			// Initialize XML file
-			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-			doc.appendChild(doc.createElement("repository"));
+			repoDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+			repoDoc.appendChild(repoDoc.createElement("repository"));
 			
-			if (!saveRepository(doc)) {
+			if (!saveRepository()) {
 				return false;
 			}
-			
 		} catch (Exception e) {
 			Logger.error(e.getMessage());
 			return false;
@@ -86,12 +86,12 @@ public class FileRepository implements Repository {
 
 	@Override
 	public boolean writeEntry(String db, String schema, Package pkg) {
-		Document doc = openRepository();
-		if (null == doc) {
+		openRepository();
+		if (null == repoDoc) {
 			return false;
 		}
 		
-		Element root = doc.getDocumentElement();
+		Element root = repoDoc.getDocumentElement();
 		Element dbElem = null;
 		Element schElem = null;
 			
@@ -99,22 +99,22 @@ public class FileRepository implements Repository {
 		dbElem = findNode(root, "database", db);
 		// If database entry doesn't exist yet, create it
 		if (null == dbElem) {
-			dbElem = createTag(doc, "database", db);
+			dbElem = createTag("database", db);
 			root.appendChild(dbElem);
 		}
 			
 		// Get schema entry
 		schElem = findNode(dbElem, "schema", schema);
 		if (null == schElem) {
-			schElem = createTag(doc, "schema", schema);
+			schElem = createTag("schema", schema);
 			dbElem.appendChild(schElem);
 		}
 			
-		Element pkgElem = createTag(doc, "package", null);
-		pkgElem.appendChild(doc.createTextNode(pkg.getFullName()));
+		Element pkgElem = createTag("package", null);
+		pkgElem.appendChild(repoDoc.createTextNode(pkg.getFullName()));
 		schElem.appendChild(pkgElem);
 							
-		return saveRepository(doc);
+		return saveRepository();
 	}
 	
 	private Element findNode(Element root, String nodeName, String name) {
@@ -127,24 +127,25 @@ public class FileRepository implements Repository {
 		return null;
 	}
 	
-	private Document openRepository() {
+	private boolean openRepository() {
 		try {
-			return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(repo);
+			repoDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(repo);
+			return (null != repoDoc);
 		}
 		catch (Exception e) {
-			Logger.error("Cannot open repository");
+			Logger.error("Cannot open repository.");
 			Logger.error(e.getMessage());
-			return null;
+			return false;
 		}
 	}
 	
-	private boolean saveRepository(Document doc) {
+	private boolean saveRepository() {
 		// Write XML to disk
 		Transformer transformer;
 		try {
 			transformer = TransformerFactory.newInstance().newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			transformer.transform(new DOMSource(doc), new StreamResult(repo));
+			transformer.transform(new DOMSource(repoDoc), new StreamResult(repo));
 			return true;
 			
 		} catch (TransformerFactoryConfigurationError | TransformerException e) {
@@ -153,8 +154,8 @@ public class FileRepository implements Repository {
 		}
 	}
 	
-	private Element createTag(Document doc, String tagName, String name) {
-		Element elem = doc.createElement(tagName);
+	private Element createTag(String tagName, String name) {
+		Element elem = repoDoc.createElement(tagName);
 		if (null != name) {
 			elem.setAttribute("name", name);
 		}
@@ -189,54 +190,66 @@ public class FileRepository implements Repository {
 		}
 	}
 
-	@Override
-	public boolean isPackageInstalled(String dbName, String schemaName, Package pkg) {
-		
-		Document doc = openRepository();
-		if (null == doc) {
-			// Cannot open repository, mark package as uninstalled and reinstall
-			return false;
+	private NodeList getPackageTree(String dbName, String schemaName) {
+
+		if (!openRepository()) {
+			return null;
 		}
 		
-		Element database = findNode(doc.getDocumentElement(), "database", dbName);
-		// Database is new
+		Element database = findNode(repoDoc.getDocumentElement(), "database", dbName);
+		// Cannot find database
 		if (null == database) {
-			return false;
+			return null;
 		}
 		
 		Element schema = findNode(database, "schema", schemaName);
-		// Schema is new
+		// Cannot find schema
 		if (null == schema ) {
-			return false;
+			return null;
 		}
+		return schema.getChildNodes();
+	}
+	
+	@Override
+	public boolean isPackageInstalled(String dbName, String schemaName, Package pkg) {
 		
-		NodeList pkgList = schema.getChildNodes();
-		for(int i=0; i<pkgList.getLength();i++) {
-			// getFullName includes version number as well
-			if (pkgList.item(i).getTextContent().equals(pkg.getFullName())) {
-				return true;
+		NodeList pkgList = getPackageTree(dbName, schemaName);
+		if (null != pkgList) {
+			for(int i=0; i<pkgList.getLength();i++) {
+				// getFullName includes version number as well
+				if (pkgList.item(i).getTextContent().equals(pkg.getFullName())) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean verifyDependencies(String dbName, String schema, ArrayList<Dependency> dependencies) {
+	public boolean verifyDependencies(String dbName, String schemaName, ArrayList<Dependency> dependencies) {
 		if (null == dependencies || dependencies.isEmpty()) {
 			return true;
 		}
-
-		Document doc = openRepository();
 		
-		if (null == doc) {
-			// Cannot read repository, abort
+		if (!openRepository()) {
+			Logger.verbose("Cannot read repository.");
 			return false;
 		}
-		// Check all dependencies
-		for (Dependency depend : dependencies) {
-			// TODO: Verify dependencies
+		
+		Logger.verbose("Check all dependencies.");
+		NodeList pkgTree = getPackageTree(dbName, schemaName);
+		for (Dependency dep : dependencies) {
+			if (!verifyDependency(pkgTree, dep)) {
+				Logger.error("Cannot resolve dependency \"" + dep.getName() + "-" + dep.getMin() + "\"");
+				return false;
+			}
 		}
 		return true;
+	}
+	
+	private boolean verifyDependency(NodeList pkgTree, Dependency dep) {
+		// TODO: Verify dependencies for package installation
+		return false;
 	}
 
 	@Override
