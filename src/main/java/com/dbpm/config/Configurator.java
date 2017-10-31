@@ -25,13 +25,29 @@ public class Configurator implements Module {
 	private String dbName;
 	private String platform;
 	
+	/**
+	 * Instantiates a new Configurator object.
+	 * @param args The arguments for the configuration.<br/>
+	 * Those can be:<br/><br/>
+	 * db - Store configuration inside the database<br/>
+	 * -user - The username to store the configuration in.<br/>
+	 * -passwor - The password for the user<br/>
+	 * -host - The host where the database is located<br/>
+	 * -port - The port on which the database is reachable<br/>
+	 * -dbname - The database name<br/>
+	 * -platform - The database platform<br/>
+	 * <br/><br/>
+	 * file - stores the configuartion in a file on the filesystem.
+	 * 
+	 * @throws IllegalArgumentException
+	 */
 	public Configurator (String[] args) throws IllegalArgumentException {
 		
 		if (args[1].equals(RepoStorage.DB.name().toLowerCase())) {
 			dbStorage = true;
 		
 			for (int i=2;i<args.length;i++) {
-				if (args[i].toUpperCase().equals(RepoStorage.DB.name())) { dbStorage = true; }
+				if (args[i].equals(RepoStorage.DB.name().toLowerCase())) { dbStorage = true; }
 				else if (args[i].equals(Parameter.USER)) { user = args[++i]; }
 				else if (args[i].equals(Parameter.PASSWORD)) { password = args[++i]; }
 				else if (args[i].equals(Parameter.HOST)) { host = args[++i]; }
