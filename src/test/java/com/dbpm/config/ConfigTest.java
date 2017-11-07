@@ -22,14 +22,15 @@ public class ConfigTest {
 	@Test
 	public void test_ConfigFile() throws Exception {
 		Config config = new Config();
-		Assert.assertTrue(config.createConfiguration());
-		Assert.assertTrue(config.removeConfiguration());
+		boolean result = config.createConfiguration();
+		config.removeConfiguration();
+		Assert.assertTrue(result);
 	}
 	
 	@Test
 	public void test_removeConfiguration() throws Exception {
 		Config config = new Config();
-		Assert.assertTrue(config.createConfiguration());
+		config.createConfiguration();
 		Assert.assertTrue(config.removeConfiguration());
 	}
 
