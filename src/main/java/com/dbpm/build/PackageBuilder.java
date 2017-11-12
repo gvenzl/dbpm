@@ -38,6 +38,9 @@ public class PackageBuilder implements Module {
 	private File workDir;
 	private Package dbpmPackage;
 	
+	/**
+	 * Creates a new PackageBuilder instance.
+	 */
 	public PackageBuilder() {
 		workDir = new File (System.getProperty("user.dir"));
 	}
@@ -47,7 +50,7 @@ public class PackageBuilder implements Module {
 		Logger.log("Building package...");
 		Logger.verbose("Current directory: " + workDir);
 		
-		File manifestFile = new File ("manifest.pm");
+		File manifestFile = new File (workDir + "/manifest.pm");
 		if (!manifestFile.exists()) {
 			Logger.error("Manifest not found!");
 		}
@@ -65,7 +68,7 @@ public class PackageBuilder implements Module {
 				
 				File dbpgFile = new File(dbpgFileName);
 				if (dbpgFile.exists()) {
-					Logger.verbose("Package file already exists, overwriting");
+					Logger.verbose("Package file already exists, overwriting...");
 					dbpgFile.delete();
 				}
 				createPackage(dbpgFileName);
