@@ -9,12 +9,9 @@ public class PackageBuilderTest {
 
     @Test
     public void test_buildPackage() {
-        String workDir = new File(System.getProperty("user.dir")).getAbsolutePath();
-        System.setProperty("user.dir", System.getProperty("user.dir") + "/src/test/resources/TestPackage/");
         Verbose.getInstance().setVerbose(true);
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackage/");
         builder.run();
-        System.setProperty("user.dir", workDir);
-
+        new File(builder.getPackageName()).delete();
     }
 }

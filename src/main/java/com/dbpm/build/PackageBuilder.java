@@ -36,6 +36,7 @@ public class PackageBuilder implements Module {
 
 	private static final int BYTES = 8192;
 	private final File workDir;
+	private String fullPackageName;
 
 	/**
 	 * Creates a new PackageBuilder instance.
@@ -43,6 +44,22 @@ public class PackageBuilder implements Module {
 	public PackageBuilder() {
 		workDir = new File (System.getProperty("user.dir"));
 	}
+
+	/**
+	 * Creates a new PackageBuilder instance.
+	 * @param workDir The working directory to use.
+	 */
+	public PackageBuilder (String workDir) {
+		this.workDir =  new File(workDir);
+	}
+
+	public String getWorkDir() {
+		return workDir.getAbsolutePath();
+	}
+
+	public String getPackageName() {
+	    return fullPackageName;
+    }
 
 	@Override
 	public void run() {
@@ -60,6 +77,7 @@ public class PackageBuilder implements Module {
 											Files.readAllBytes(
 												Paths.get(manifestFile.getAbsolutePath())));
 				Package dbpmPackage = new ManifestReader(manifest).getPackage();
+				fullPackageName = dbpmPackage.getFullName();
 				Logger.verbose("Package name: " + dbpmPackage.getName());
 				Logger.verbose("Building for platform: " + dbpmPackage.getPlatform());
 				
