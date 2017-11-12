@@ -136,7 +136,7 @@ public class Installer implements Module {
 			if (!repo.savePackage(pkgReader.getPackage(), Files.readAllBytes(Paths.get(packageFile.getAbsolutePath())))) {
 				boolean retry = true;
 				while (retry) {
-					switch (Logger.prompt("Package couldn't be saved in repository, continue without saving", "y")) {
+					switch (Logger.prompt("y","Package couldn't be saved in repository, continue without saving?")) {
 						case "n": { 
 							System.out.println("User response \"n\", abort.");
 							return false;
