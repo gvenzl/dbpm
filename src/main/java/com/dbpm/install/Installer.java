@@ -124,7 +124,7 @@ public class Installer implements Module {
 	 */
 	private boolean installFile(File packageFile) {
 		if (!packageFile.exists()) {
-			Logger.error("Package file " + packageFile.getAbsolutePath() + " does not exist!");
+			Logger.error("Package file ", packageFile.getAbsolutePath(), " does not exist!");
 			return false;
 		}
 		

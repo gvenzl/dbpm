@@ -17,6 +17,9 @@ public class LoggerTest {
 	public void test_log() {
 		Logger.log("Test message");
 	}
+
+	@Test
+	public void test_log_multiple_params() { Logger.log("This ", "is ", "a ", "Test ", "Message"); }
 	
 	@Test
 	public void test_error() {

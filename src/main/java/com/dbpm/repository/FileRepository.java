@@ -240,7 +240,7 @@ public class FileRepository implements Repository {
 		NodeList pkgTree = getPackageTree(dbName, schemaName);
 		for (Dependency dep : dependencies) {
 			if (!verifyDependency(pkgTree, dep)) {
-				Logger.error("Cannot resolve dependency \"" + dep.getName() + "-" + dep.getMin() + "\"");
+				Logger.error("Cannot resolve dependency \"", dep.getName(), "-", dep.getMin().toString(), "\"");
 				return false;
 			}
 		}
