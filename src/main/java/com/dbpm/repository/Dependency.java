@@ -13,11 +13,11 @@ public class Dependency {
 
 	public class Version {
 
-		private int major;
-		private int minor;
-		private int patch;
+		private final int major;
+		private final int minor;
+		private final int patch;
 		
-		public Version (int maj, int min, int ptch) {
+		Version(int maj, int min, int ptch) {
 			major = maj;
 			minor = min;
 			patch = ptch;

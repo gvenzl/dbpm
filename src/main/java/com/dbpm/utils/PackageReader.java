@@ -29,17 +29,16 @@ import com.dbpm.repository.Package;
  */
 public class PackageReader {
 
-	private static int BYTES = 8192;
-	private File packageFile;
+	private static final int BYTES = 8192;
+	private final File packageFile;
 	private ManifestReader manifest;
 	
 	/**
 	 * Creates a new package reader.
 	 * @param pkg The package file
-	 * @throws ZipException If the zip archive cannot be opened
 	 * @throws IOException If the package cannot be opened or read
 	 */
-	public PackageReader(File pkg) throws ZipException, IOException {
+	public PackageReader(File pkg) throws IOException {
 		packageFile = pkg;
 		try (ZipFile pkgZip = new ZipFile(packageFile);
 			 Scanner s = new Scanner(pkgZip.getInputStream(pkgZip.getEntry("manifest.pm")))) {
@@ -73,7 +72,7 @@ public class PackageReader {
 	 * @return A list of files form the zip file
 	 */
 	private HashMap<String, String> getFiles(String subDir) {
-		HashMap<String, String> entries = new HashMap<String, String>();
+		HashMap<String, String> entries = new HashMap<>();
 		
 		try(ZipFile pkgZip = new ZipFile(packageFile)) {
 			Enumeration <? extends ZipEntry> e = pkgZip.entries();
@@ -81,6 +80,7 @@ public class PackageReader {
 				ZipEntry entry = e.nextElement();
 				// If the sub directory is null or a match has been found, add the match to map
 				if (null == subDir || entry.getName().startsWith(subDir)) {
+					//TODO: Check whether this can be made with less memory footprint by just storing file handles rarther than content.
 					String content = readContent(pkgZip.getInputStream(entry));
 					if (!content.isEmpty()) {
 						entries.put(entry.getName(), content);
@@ -112,13 +112,11 @@ public class PackageReader {
 	}
 	
 	public HashMap<String, String> getPreInstallFiles() {
-		//TODO: extract preinstall
-		return new HashMap<String, String>();
+		return getFiles("PREINSTALL");
 	}
 	
 	public HashMap<String, String> getUpgradeFiles() {
-		//TODO: Extract upgrade
-		return new HashMap<String, String>();
+		return getFiles("UPGRADE");
 	}
 	
 	public HashMap<String, String> getInstallFiles() {
@@ -126,18 +124,15 @@ public class PackageReader {
 	}
 	
 	public HashMap<String, String> getRollbackFiles() {
-		//TODO: Get rollback files
-		return new HashMap<String, String>();
+		return getFiles("ROLLBACK");
 	}
 	
 	public HashMap<String, String> getDowngradeFiles() {
-		//TODO: Extract downgrade files
-		return new HashMap<String, String>();
+		return getFiles("DOWNGRADE");
 	}
 	
 	public HashMap<String, String> getPostInstallFiles() {
-		//TODO: Extract Post install files
-		return new HashMap<String, String>();
+		return getFiles("POSTINSTALL");
 	}
 	
 }

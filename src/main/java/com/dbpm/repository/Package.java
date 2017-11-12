@@ -24,9 +24,9 @@ public class Package {
 		String pkgName = packageName.substring(0, packageName.lastIndexOf("."));
 		name = pkgName.substring(0, pkgName.indexOf("-"));
 		String version = packageName.substring(pkgName.indexOf("-")+1, pkgName.lastIndexOf("-"));
-		major = Integer.valueOf(version.substring(0, version.indexOf("."))).intValue();
-		minor = Integer.valueOf(version.substring(version.indexOf(".")+1, version.lastIndexOf("."))).intValue();
-		patch = Integer.valueOf(version.substring(version.lastIndexOf(".")+1)).intValue();
+		major = Integer.valueOf(version.substring(0, version.indexOf(".")));
+		minor = Integer.valueOf(version.substring(version.indexOf(".")+1, version.lastIndexOf(".")));
+		patch = Integer.valueOf(version.substring(version.lastIndexOf(".")+1));
 		platform = pkgName.substring(pkgName.lastIndexOf("-")+1);
 	}
 	

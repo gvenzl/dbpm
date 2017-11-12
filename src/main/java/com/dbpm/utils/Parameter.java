@@ -11,13 +11,13 @@ package com.dbpm.utils;
 
 public final class Parameter {
 
-	public static String USER 			= "-user";
-	public static String ADMINUSER 		= "-adminUser";
-	public static String PASSWORD 		=  "-password";
-	public static String ADMINPASSWORD 	= "-adminPassword";
-	public static String HOST 			= "-host";
-	public static String PORT 			= "-port";
-	public static String DBNAME 		= "-dbName";
-	public static String VERBOSE		= "-v";
-	public static String PLATFORM 		= "-platform";
+	public static final String USER 			= "-user";
+	public static final String ADMINUSER 		= "-adminUser";
+	public static final String PASSWORD 		=  "-password";
+	public static final String ADMINPASSWORD 	= "-adminPassword";
+	public static final String HOST 			= "-host";
+	public static final String PORT 			= "-port";
+	public static final String DBNAME 		= "-dbName";
+	public static final String VERBOSE		= "-v";
+	public static final String PLATFORM 		= "-platform";
 }

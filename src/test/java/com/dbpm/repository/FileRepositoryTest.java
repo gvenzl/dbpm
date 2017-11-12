@@ -24,11 +24,11 @@ import com.dbpm.DBPM;
 
 public class FileRepositoryTest{
 
-	static String TESTPACKAGE = "Testpackage-1.0.0-oracle" + DBPM.PKG_FILE_EXTENSION;
-	String repoName = "testrepo.xml";
-	String storeName = "store";
+	private static final String TESTPACKAGE = "Testpackage-1.0.0-oracle" + DBPM.PKG_FILE_EXTENSION;
+	private final String repoName = "testrepo.xml";
+	private final String storeName = "store";
 	
-	FileRepository repo;
+	private FileRepository repo;
 	
 	@Before
 	public void setup() {

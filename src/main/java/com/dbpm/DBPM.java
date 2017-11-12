@@ -18,12 +18,12 @@ import com.dbpm.utils.Parameter;
 
 public class DBPM {
 
-	public static String PKG_FILE_EXTENSION = ".dbpkg";
+	public static final String PKG_FILE_EXTENSION = ".dbpkg";
 	
 	static class HelpPrinter implements Module {
 		
 		private static String msg;
-		public HelpPrinter(String message) {
+		HelpPrinter(String message) {
 			msg = message;
 		}
 		
@@ -104,7 +104,7 @@ public class DBPM {
 	 * @param args The list of arguments passed on
 	 * @return A runtime module
 	 */
-	static Module parseOptions(String[] args) {
+	private static Module parseOptions(String[] args) {
 		
 		try {
 			if (args.length == 0) {
@@ -112,8 +112,8 @@ public class DBPM {
 			}
 			
 			// Check for verbose flag
-			for (int i=0; i<args.length;i++) {
-				if (args[i].equals(Parameter.VERBOSE)) {
+			for (String arg : args) {
+				if (arg.equals(Parameter.VERBOSE)) {
 					Verbose.getInstance().setVerbose(true);
 					break;
 				}

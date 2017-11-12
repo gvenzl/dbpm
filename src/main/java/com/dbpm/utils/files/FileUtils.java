@@ -18,13 +18,13 @@ import java.util.Arrays;
 public class FileUtils {
 
 	/**
-	 * Compares the bytes of two files
+	 * Compares the bytes of two files.
 	 * @param file File to compare
 	 * @param content The content to compare
 	 * @return True if the files are the same, otherwise false
-	 * @throws IOException
+	 * @throws IOException Any exception while reading the file
 	 */
-	public static boolean compareFileContentToBytess(File file, byte[] content) throws IOException {
+	public static boolean compareFileContentToBytes(File file, byte[] content) throws IOException {
 		
 		if (!file.exists()) {
 			return false;

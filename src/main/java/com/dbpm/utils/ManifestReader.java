@@ -20,13 +20,12 @@ import com.dbpm.repository.Dependency;
 import com.dbpm.repository.Package;
 
 public class ManifestReader {
-	
-	private JSONObject				manifest;
-	private Package 				dbpmPackage;
-	private ArrayList<Dependency>	dependencies;
+
+	private final Package 				dbpmPackage;
+	private final ArrayList<Dependency>	dependencies;
 	
 	public ManifestReader(String mf) throws IOException {
-		manifest = new JSONObject(mf);
+		JSONObject manifest = new JSONObject(mf);
 		dbpmPackage = new Package();
 		dbpmPackage.setName(manifest.getString("name"));
 		dbpmPackage.setDescrption(manifest.getString("description"));
@@ -34,7 +33,7 @@ public class ManifestReader {
 		dbpmPackage.setMinor(manifest.getJSONObject("version").getInt("minor"));
 		dbpmPackage.setPatch(manifest.getJSONObject("version").getInt("patch"));
 		dbpmPackage.setPlatform(manifest.getString("platform"));
-		dependencies = new ArrayList<Dependency>();
+		dependencies = new ArrayList<>();
 
 		try {
 			JSONArray packageDependencies = manifest.getJSONArray("dependencies");

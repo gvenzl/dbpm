@@ -11,7 +11,6 @@ package com.dbpm.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -37,13 +36,13 @@ public class Config {
         (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
     };
 	
-    private static String CONFIG_FILE_NAME = "dbpm.properties";
-    private static String REPOSITORY = "repo.xml";
-    private static String PACKAGESTORE = "store";
+    private static final String CONFIG_FILE_NAME = "dbpm.properties";
+    private static final String REPOSITORY = "repo.xml";
+    private static final String PACKAGESTORE = "store";
     
-	private Properties    properties;
-	private static String dbpmDir = System.getProperty("user.home") + "/.dbpm";
-	private static File   configFile = new File(dbpmDir + "/" + CONFIG_FILE_NAME);
+	private final Properties    properties;
+	private static final String dbpmDir = System.getProperty("user.home") + "/.dbpm";
+	private static final File   configFile = new File(dbpmDir + "/" + CONFIG_FILE_NAME);
 	
 	public Config() {
 		properties = new Properties();

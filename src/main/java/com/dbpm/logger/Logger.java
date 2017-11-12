@@ -66,7 +66,7 @@ public final class Logger {
 			// No character passed (just hit enter) and default response is not null -> Default Input
 			if (null == response && null != defaultResponse) { return defaultResponse; }
 			// Response accepted, return response
-			if ("ynr".indexOf(response) != -1) { return response; }
+			if ("ynr".contains(response)) { return response; }
 		}
 	}
 }

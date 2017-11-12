@@ -33,11 +33,10 @@ import com.dbpm.repository.Package;
  * @author gvenzl
  */
 public class PackageBuilder implements Module {
-	
-	private static int BYTES = 8192;
-	private File workDir;
-	private Package dbpmPackage;
-	
+
+	private static final int BYTES = 8192;
+	private final File workDir;
+
 	/**
 	 * Creates a new PackageBuilder instance.
 	 */
@@ -60,7 +59,7 @@ public class PackageBuilder implements Module {
 				String manifest = new  String(
 											Files.readAllBytes(
 												Paths.get(manifestFile.getAbsolutePath())));
-				dbpmPackage = new ManifestReader(manifest).getPackage();
+				Package dbpmPackage = new ManifestReader(manifest).getPackage();
 				Logger.verbose("Package name: " + dbpmPackage.getName());
 				Logger.verbose("Building for platform: " + dbpmPackage.getPlatform());
 				
@@ -82,7 +81,7 @@ public class PackageBuilder implements Module {
 	}
 	
 	private void createPackage(String packageName) {
-		
+
 		byte[] buffer = new byte[BYTES];
 		int len;
 		try {
@@ -118,23 +117,22 @@ public class PackageBuilder implements Module {
 	
 	private ArrayList<File> getDirectoryStructure(File dir) throws IllegalFolderException, IllegalFileException {
 		
-		ArrayList<File> filesCollection = new ArrayList<File>();
+		ArrayList<File> filesCollection = new ArrayList<>();
 		
-		File[] files = dir.listFiles();	
-		for (int i=0; i<files.length; i++) {
+		File[] files = dir.listFiles();
+		for (File file : files) {
 			// Recursive tree build
-			if (files[i].isDirectory()) {
+			if (file.isDirectory()) {
 				// Throw exception if folder is not allowed!
-				if (!isAllowedDirectory(files[i])) {
-					throw new IllegalFolderException("Folder " + files[i].getName() + " is invalid!");
+				if (!isAllowedDirectory(file)) {
+					throw new IllegalFolderException("Folder " + file.getName() + " is invalid!");
 				}
-				filesCollection.addAll(getDirectoryStructure(files[i]));
-			}
-			else {
-				if (!isAllowedFile(files[i])) {
-					throw new IllegalFileException("File " + files[i].getName() + " has not a valid extension!");
+				filesCollection.addAll(getDirectoryStructure(file));
+			} else {
+				if (!isAllowedFile(file)) {
+					throw new IllegalFileException("File " + file.getName() + " has not a valid extension!");
 				}
-				filesCollection.add(files[i]);
+				filesCollection.add(file);
 			}
 		}
 		return filesCollection;

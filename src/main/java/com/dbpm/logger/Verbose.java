@@ -14,7 +14,7 @@ public class Verbose {
 	private static Verbose instance = null;
 	private boolean verbose = false;
 	
-	protected Verbose() {
+	private Verbose() {
 	// Exists only to defeat instantiation.
 	}
 	public static Verbose getInstance() {

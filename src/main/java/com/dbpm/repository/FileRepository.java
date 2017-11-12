@@ -32,8 +32,8 @@ import com.dbpm.utils.files.FileUtils;
 
 public class FileRepository implements Repository {
 	
-	private File repo;
-	private File store;
+	private final File repo;
+	private final File store;
 	private Document repoDoc;
 	
 	public FileRepository(String repo, String store) {
@@ -76,11 +76,11 @@ public class FileRepository implements Repository {
 				return false;
 			}
 		}
-		
+
 		if (!store.mkdir()) {
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -166,7 +166,7 @@ public class FileRepository implements Repository {
 	public boolean savePackage(Package pkg, byte[] content) {
 		File pkgFile = new File(store.getAbsolutePath() + "/" + pkg.getFullName());
 		try {
-			if (pkgFile.exists() && FileUtils.compareFileContentToBytess(pkgFile, content)) {
+			if (pkgFile.exists() && FileUtils.compareFileContentToBytes(pkgFile, content)) {
 				// File is the same, no need to write it again
 				return true;
 			}
@@ -236,7 +236,7 @@ public class FileRepository implements Repository {
 			return false;
 		}
 		
-		Logger.verbose("Check all dependencies.");
+		Logger.verbose("Check all dependencies...");
 		NodeList pkgTree = getPackageTree(dbName, schemaName);
 		for (Dependency dep : dependencies) {
 			if (!verifyDependency(pkgTree, dep)) {
@@ -244,6 +244,7 @@ public class FileRepository implements Repository {
 				return false;
 			}
 		}
+		Logger.verbose("All dependencies present.");
 		return true;
 	}
 	

@@ -37,9 +37,9 @@ public class Configurator implements Module {
 	 * -dbname - The database name<br/>
 	 * -platform - The database platform<br/>
 	 * <br/><br/>
-	 * file - stores the configuartion in a file on the filesystem.
+	 * file - stores the configuration in a file on the filesystem.
 	 * 
-	 * @throws IllegalArgumentException
+	 * @throws IllegalArgumentException If an illegal argument has been passed on.
 	 */
 	public Configurator (String[] args) throws IllegalArgumentException {
 		

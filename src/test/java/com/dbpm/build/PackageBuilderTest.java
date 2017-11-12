@@ -1,6 +1,5 @@
 package com.dbpm.build;
 
-import com.dbpm.logger.Logger;
 import com.dbpm.logger.Verbose;
 import org.junit.Test;
 
