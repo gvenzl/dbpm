@@ -255,8 +255,6 @@ public class FileRepository implements Repository {
 
 	@Override
 	public boolean remove() {
-		store.delete();
-		repo.delete();
-		return true;
+		return (store.delete() && repo.delete());
 	}
 }
