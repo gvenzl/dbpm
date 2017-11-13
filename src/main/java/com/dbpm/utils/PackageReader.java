@@ -16,7 +16,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import com.dbpm.logger.Logger;
@@ -98,16 +97,18 @@ public class PackageReader {
 	
 	private String readContent(InputStream stream) throws IOException {
 		byte buffer[] = new byte[BYTES];
-		String content = "";
-		
+
+		StringBuilder sb = new StringBuilder();
 		while (stream.read(buffer, 0, BYTES) != -1) {
-			content += new String(buffer);
+			sb.append(new String(buffer));
 		}
-		
 		stream.close();
+
+        String content = sb.toString();
 		// Add a line feed if it is missing
-		if (!content.isEmpty() && content.charAt(content.length()-1) != '\n')
-		content += '\n';
+		if (!content.isEmpty() && content.charAt(content.length()-1) != '\n') {
+            content += '\n';
+        }
 		return content;
 	}
 	
