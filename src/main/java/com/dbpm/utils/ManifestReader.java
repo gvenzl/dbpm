@@ -23,8 +23,12 @@ public class ManifestReader {
 
 	private final Package 				dbpmPackage;
 	private final ArrayList<Dependency>	dependencies;
-	
-	public ManifestReader(String mf) throws IOException {
+
+    /**
+     * Creates a new ManifestReader instance.
+     * @param mf The manifest content.
+     */
+	public ManifestReader(String mf) {
 		JSONObject manifest = new JSONObject(mf);
 		dbpmPackage = new Package();
 		dbpmPackage.setName(manifest.getString("name"));
