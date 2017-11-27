@@ -47,7 +47,7 @@ In order to build a package archive (.dbpkg) the package source folder must have
     |--- 003.name.sys
     |--- NNN.name.xyz
 
-### manifest.pm
+### manifest.dpm
 The manifest describes the package that is being built. It is a JSON document containing all information necessary for building and installing the package:
 
     {
