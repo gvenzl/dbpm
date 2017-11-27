@@ -9,6 +9,14 @@
 
 package com.dbpm.build;
 
+import com.dbpm.Module;
+import com.dbpm.logger.Logger;
+import com.dbpm.repository.Package;
+import com.dbpm.utils.ManifestReader;
+import com.dbpm.utils.PackageValidator;
+import com.dbpm.utils.files.IllegalFileException;
+import com.dbpm.utils.files.IllegalFolderException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,15 +26,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import com.dbpm.Module;
-import com.dbpm.logger.Logger;
-import com.dbpm.utils.ManifestReader;
-import com.dbpm.utils.files.AllowedFiles;
-import com.dbpm.utils.files.AllowedFolders;
-import com.dbpm.utils.files.IllegalFileException;
-import com.dbpm.utils.files.IllegalFolderException;
-import com.dbpm.repository.Package;
 
 /**
  * This class handles the creation of dbpm packages.
@@ -49,7 +48,7 @@ public class PackageBuilder implements Module {
 	 * Creates a new PackageBuilder instance.
 	 * @param workDir The working directory to use.
 	 */
-	public PackageBuilder (String workDir) {
+	PackageBuilder (String workDir) {
 		this.workDir =  new File(workDir);
 	}
 
@@ -57,7 +56,7 @@ public class PackageBuilder implements Module {
 		return workDir.getAbsolutePath();
 	}
 
-	public String getPackageName() {
+	String getPackageName() {
 	    return fullPackageName;
     }
 
@@ -66,7 +65,7 @@ public class PackageBuilder implements Module {
 		Logger.log("Building package...");
 		Logger.verbose("Current directory: " + workDir);
 		
-		File manifestFile = new File (workDir + "/manifest.pm");
+		File manifestFile = new File (workDir + "/manifest.dpm");
 		if (!manifestFile.exists()) {
 			Logger.error("Manifest not found!");
 		}
@@ -86,7 +85,10 @@ public class PackageBuilder implements Module {
 				File dbpgFile = new File(dbpgFileName);
 				if (dbpgFile.exists()) {
 					Logger.verbose("Package file already exists, overwriting...");
-					dbpgFile.delete();
+					if (!dbpgFile.delete()) {
+					    Logger.error("Can't override package!");
+					    return;
+                    }
 				}
 				createPackage(dbpgFileName);
 			}
@@ -112,7 +114,8 @@ public class PackageBuilder implements Module {
 			zip.setLevel(9);
 			
 			for (File entry : files) {
-	    		Logger.verbose("Adding " + entry.getName());
+	    		Logger.verbose("Adding ", entry.getName());
+	    		// Remove absolute path entries within zip file.
 	    		String fileName = entry.getAbsolutePath().replace(workDir.getAbsolutePath() + "/", "");
 				zip.putNextEntry(new ZipEntry(fileName));
 				FileInputStream in = new FileInputStream(entry);
@@ -134,45 +137,27 @@ public class PackageBuilder implements Module {
 	}
 	
 	private ArrayList<File> getDirectoryStructure(File dir) throws IllegalFolderException, IllegalFileException {
-		
-		ArrayList<File> filesCollection = new ArrayList<>();
+
+        PackageValidator.validateDirectoryStructure(dir);
+
+        ArrayList<File> filesCollection = new ArrayList<>();
 		
 		File[] files = dir.listFiles();
+
+		// If the directory doesn't contain any files, return an empty list.
+		if (null == files) {
+		    return new ArrayList<File>();
+        }
+
 		for (File file : files) {
 			// Recursive tree build
 			if (file.isDirectory()) {
-				// Throw exception if folder is not allowed!
-				if (!isAllowedDirectory(file)) {
-					throw new IllegalFolderException("Folder " + file.getName() + " is invalid!");
-				}
 				filesCollection.addAll(getDirectoryStructure(file));
-			} else {
-				if (!isAllowedFile(file)) {
-					throw new IllegalFileException("File " + file.getName() + " has not a valid extension!");
-				}
+			}
+			else {
 				filesCollection.add(file);
 			}
 		}
 		return filesCollection;
-	}
-	
-	private boolean isAllowedFile(File file) {
-		
-		for (AllowedFiles fileExt : AllowedFiles.values()) {
-			if (file.getName().toUpperCase().endsWith(fileExt.name().toUpperCase())) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean isAllowedDirectory(File file) {
-
-		for (AllowedFolders folderName : AllowedFolders.values()) {
-			if (folderName.name().equals(file.getName())) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

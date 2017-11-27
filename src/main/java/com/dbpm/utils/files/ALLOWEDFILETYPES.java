@@ -3,12 +3,12 @@
 * author:  gvenzl
 * created: 26 Mar 2016
 *
-* name: AllowedFiles.java
+* name: ALLOWEDFILETYPES.java
 *
 */
 
 package com.dbpm.utils.files;
 
-public enum AllowedFiles {
-	SQL, SYS, CMD, PM
+public enum ALLOWEDFILETYPES {
+	SQL, SYS, CMD, DPM
 }

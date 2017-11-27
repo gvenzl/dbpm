@@ -3,12 +3,12 @@
 * author:  gvenzl
 * created: 26 Mar 2016
 *
-* name: AllowedFolders.java
+* name: ALLOWEDFOLDERS.java
 *
 */
 
 package com.dbpm.utils.files;
 
-public enum AllowedFolders {
+public enum PHASE {
 	PREINSTALL, INSTALL, UPGRADE, ROLLBACK, DOWNGRADE, POSTINSTALL
 }

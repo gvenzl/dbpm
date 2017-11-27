@@ -9,15 +9,13 @@
 
 package com.dbpm.utils;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
+import com.dbpm.repository.Dependency;
+import com.dbpm.repository.Package;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.dbpm.repository.Dependency;
-import com.dbpm.repository.Package;
+import java.util.ArrayList;
 
 public class ManifestReader {
 

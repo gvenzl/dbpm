@@ -9,6 +9,10 @@
 
 package com.dbpm.utils;
 
+import com.dbpm.logger.Logger;
+import com.dbpm.repository.Package;
+import com.dbpm.utils.files.PHASE;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,9 +21,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
-import com.dbpm.logger.Logger;
-import com.dbpm.repository.Package;
 
 /**
  * Reads a package file and extracts content
@@ -36,11 +37,16 @@ public class PackageReader {
 	 * Creates a new package reader.
 	 * @param pkg The package file
 	 * @throws IOException If the package cannot be opened or read
+	 * @throws IllegalPackageException If the package is illegal
 	 */
-	public PackageReader(File pkg) throws IOException {
+	public PackageReader(File pkg) throws IOException, IllegalPackageException {
+        if (!PackageValidator.validatePackage(pkg)) {
+            throw new IllegalPackageException("The package is not a valid DBPM package!");
+        }
+
 		packageFile = pkg;
 		try (ZipFile pkgZip = new ZipFile(packageFile);
-			 Scanner s = new Scanner(pkgZip.getInputStream(pkgZip.getEntry("manifest.pm")))) {
+			 Scanner s = new Scanner(pkgZip.getInputStream(pkgZip.getEntry("manifest.dpm")))) {
 				// Extract package information
 				s.useDelimiter("\\A");
 				manifest = new ManifestReader(s.next());
@@ -67,19 +73,19 @@ public class PackageReader {
 	
 	/**
 	 * Returns a list of files within a zip file.
-	 * @param subDir An optional directory name within the zip file
+	 * @param phase An optional directory name within the zip file
 	 * @return A list of files form the zip file
 	 */
-	private HashMap<String, String> getFiles(String subDir) {
+	private HashMap<String, String> getFiles(PHASE phase) {
 		HashMap<String, String> entries = new HashMap<>();
 		
 		try(ZipFile pkgZip = new ZipFile(packageFile)) {
 			Enumeration <? extends ZipEntry> e = pkgZip.entries();
 			while (e.hasMoreElements()) {
 				ZipEntry entry = e.nextElement();
-				// If the sub directory is null or a match has been found, add the match to map
-				if (null == subDir || entry.getName().startsWith(subDir)) {
-					//TODO: Check whether this can be made with less memory footprint by just storing file handles rarther than content.
+				// If a match has been found, add the match to map
+				if ( entry.getName().startsWith(phase.toString())) {
+					//TODO: Check whether this can be made with less memory footprint by just storing file handles rather than content.
 					String content = readContent(pkgZip.getInputStream(entry));
 					if (!content.isEmpty()) {
 						entries.put(entry.getName(), content);
@@ -111,29 +117,52 @@ public class PackageReader {
         }
 		return content;
 	}
-	
+
+    /**
+     * Retrieves all files for the PREINSTALL {@link PHASE}.
+     * @return A collection containing all pre-installation files
+     */
 	public HashMap<String, String> getPreInstallFiles() {
-		return getFiles("PREINSTALL");
+		return getFiles(PHASE.PREINSTALL);
 	}
-	
+
+    /**
+     * Retrieves all files for the UPGRADE {@link PHASE}.
+     * @return A collection containing all upgrade files
+     */
 	public HashMap<String, String> getUpgradeFiles() {
-		return getFiles("UPGRADE");
+		return getFiles(PHASE.UPGRADE);
 	}
-	
+
+    /**
+     * Retrieves all files for the INSTALL {@link PHASE}.
+     * @return A collection containing all installation files
+     */
 	public HashMap<String, String> getInstallFiles() {
-		return getFiles("INSTALL");
+		return getFiles(PHASE.INSTALL);
 	}
-	
+
+    /**
+     * Retrieves all files for the ROLLBACK {@link PHASE}.
+     * @return A collection containing all rollback files
+     */
 	public HashMap<String, String> getRollbackFiles() {
-		return getFiles("ROLLBACK");
+		return getFiles(PHASE.ROLLBACK);
 	}
-	
+
+    /**
+     * Retrieves all files for the DOWNGRADE {@link PHASE}.
+     * @return A collection containing all downgrade files
+     */
 	public HashMap<String, String> getDowngradeFiles() {
-		return getFiles("DOWNGRADE");
+		return getFiles(PHASE.DOWNGRADE);
 	}
-	
+
+    /**
+     * Retrieves all files for the POSTINSTALL {@link PHASE}.
+     * @return A collection containing all post-install files
+     */
 	public HashMap<String, String> getPostInstallFiles() {
-		return getFiles("POSTINSTALL");
+		return getFiles(PHASE.POSTINSTALL);
 	}
-	
 }
