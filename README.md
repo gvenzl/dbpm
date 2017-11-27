@@ -96,7 +96,7 @@ Any dependencies will be verified first and if not present the installation abor
 
 **name:** Name of the package. (100 char max)  
 **description:** Package description (4000 char max)  
-**platform:** The Database platform this patch is intended for. Valid options are: `oracle`, `mysql`, `postgres`.  
+**platform:** The database platform this patch is intended for. Valid options are: `oracle`, `mysql`, `postgres`.  
 
 **version:**  
 &nbsp;&nbsp;&nbsp;**major:** Major version of the package  
@@ -119,7 +119,7 @@ Any dependencies will be verified first and if not present the installation abor
 Any pre-installation tasks have to be specified here. There are three different variants of pre-installation tasks:  
 **.sql:** Pre-installation task that consists of simple SQL statements.  
 **.cmd:** Pre-installation tasks that have to be executed on the command line. Examples could include things like additional installation of other binaries.  
-**.sys:** Pre-installation tasks that will be executed as administrator. Examples could include things like Database parameter change, forceful closing of connections, etc.
+**.sys:** Pre-installation tasks that will be executed as administrator. Examples could include things like database parameter change, forceful closing of connections, etc.
 
 **Note:** Pre-installation scripts are not considered part of the installation process and are therefore not rolled back on error during installation.
 
@@ -140,7 +140,7 @@ Just as with the `ROLLBACK` scripts dbpm will call the corresponding downgrade s
 Any post-installation tasks have to be specified here. There are three different variants of post-installation tasks:  
 **.sql:** Post-installation task that consists of simple SQL statements.  
 **.cmd:** Post-installation tasks that have to be executed on the command line. Examples could include things like sending an email that the installation has been completed.  
-**.sys:** Post-installation tasks that will be executed as administrator. Examples could include things like Database parameter change after successful install, reopening the Database for business again, etc.  
+**.sys:** Post-installation tasks that will be executed as administrator. Examples could include things like database parameter change after successful install, reopening the database for business again, etc.  
 
 **Note:** Post-installation scripts are not considered part of the installation process and therefore cause no rollback of the installation on error!
 
@@ -155,7 +155,7 @@ Any post-installation tasks have to be specified here. There are three different
     dbpm [command] [options] [package ...]
     
     Description
-        dbpm builds, installs or uninstalls packages in your Database.
+        dbpm builds, installs or uninstalls packages in your database.
     
     command is on of:
     * build
@@ -173,43 +173,43 @@ Any post-installation tasks have to be specified here. There are three different
     
         file             Will store the repository information within a file on disk (default)
         
-        db               Will store the repository information within a Database
+        db               Will store the repository information within a database
         -v               Verbose output
-        -platform        The Database platform (oracle, mysql, postgres)
+        -platform        The database platform (oracle, mysql, postgres)
         -user            Repository username (has to exist)
         -password        Repository user password
-        -host            The host where the Database is running on
-        -port            The port of the Database
-        -dbName          The Database name for the repository to be stored at
+        -host            The host where the database is running on
+        -port            The port of the database
+        -dbName          The database name for the repository to be stored at
         
         remove           Will remove the entire configuration. Packages that have been installed remain installed.
     
     install [options] package1, [package2, ...]
-        The installation process will install a given package into the Database.
+        The installation process will install a given package into the database.
 
         -v               Verbose output    
-        -user            Database username/schema where the package should be installed (has to exist)
-        -password        Database user password
-        -adminUser       A privileged Database user for executing the ".sys" scripts within the package, if present. If there are no ".sys" scripts within the package this user can be omitted.
+        -user            database username/schema where the package should be installed (has to exist)
+        -password        database user password
+        -adminUser       A privileged database user for executing the ".sys" scripts within the package, if present. If there are no ".sys" scripts within the package this user can be omitted.
         -adminPassword   The password for the privileged user
-        -host            The host where the Database is running on
-        -port            The port of the Database
-        -dbName          The Database name for the repository to be stored at
+        -host            The host where the database is running on
+        -port            The port of the database
+        -dbName          The database name for the repository to be stored at
           
     uninstall [options] ' package1, [package2, ...]
         The uninstallation process will uninstall a given package from a schema.
     
         -v               Verbose output
-        -user            Database username/schema where the package should be installed (has to exist)
-        -password        Database user password
-        -adminUser       A privileged Database user for executing the ".sys" scripts within the package, if present. If there are no ".sys" scripts within the package this user can be omitted.
+        -user            database username/schema where the package should be installed (has to exist)
+        -password        database user password
+        -adminUser       A privileged database user for executing the ".sys" scripts within the package, if present. If there are no ".sys" scripts within the package this user can be omitted.
         -adminPassword   The password for the privileged user
-        -host            The host where the Database is running on
-        -port            The port of the Database
-        -dbName          The Database name for the repository to be stored at
+        -host            The host where the database is running on
+        -port            The port of the database
+        -dbName          The database name for the repository to be stored at
     
 ## Repository
-dbpm has a repository in which it stores a copy of packages as all as and the information which packages have been installed where. The repository can either be held on disk in a file or in a Database itself. The repository information holds a simple table of packages and packages installed:
+dbpm has a repository in which it stores a copy of packages as all as and the information which packages have been installed where. The repository can either be held on disk in a file or in a database itself. The repository information holds a simple table of packages and packages installed:
 
 ### Repository structure
 
@@ -242,4 +242,4 @@ Database      | STRING (255)
 Schema        | STRING (255)
 Package_Name  | STRING (125)
 
-In any case dbpm **does not store** any username and password information of Database users and privileged users. Those have to be known at the time of execution of dbpm. The only credentials stores will be those of the repository if the user decided to store the repository within a Database. 
+In any case dbpm **does not store** any username and password information of database users and privileged users. Those have to be known at the time of execution of dbpm. The only credentials storeD will be those of the repository if the user decided to store the repository within a database.
