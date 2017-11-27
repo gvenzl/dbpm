@@ -10,7 +10,7 @@ public class PackageBuilderTest {
     @Test
     public void test_buildPackage() {
         Verbose.getInstance().setVerbose(true);
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackage/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageCorrectFormat/");
         builder.run();
         new File(builder.getPackageName()).delete();
     }

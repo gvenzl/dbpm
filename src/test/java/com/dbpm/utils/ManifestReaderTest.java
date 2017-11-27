@@ -9,19 +9,18 @@
 
 package com.dbpm.utils;
 
-import static org.junit.Assert.assertEquals;
+import com.dbpm.repository.Dependency;
+import com.dbpm.repository.Dependency.Version;
+import com.dbpm.repository.Package;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dbpm.repository.Dependency;
-import com.dbpm.repository.Dependency.Version;
-import com.dbpm.repository.Package;
+import static org.junit.Assert.assertEquals;
 
 public class ManifestReaderTest {
 
@@ -29,7 +28,7 @@ public class ManifestReaderTest {
 	
 	@Before
 	public void setup() throws IOException {
-		manifest = new ManifestReader(new String(Files.readAllBytes(Paths.get("src/test/resources/manifest.pm"))));
+		manifest = new ManifestReader(new String(Files.readAllBytes(Paths.get("src/test/resources/manifest.dpm"))));
 	}
 
 	@Test
