@@ -39,4 +39,21 @@ public class FileUtils {
 		return Arrays.equals(fileContent, content);
 	}
 
+    /**
+     * Returns the extension of a file name.
+     * @param fileName The file name to retrieve the extension from
+     * @return The extension
+     */
+	public static String getExtension (String fileName) {
+	    return fileName.substring(fileName.lastIndexOf(".")+1);
+    }
+
+    /**
+     * Returns the extension of a file.
+     * @param file The file to retrieve the extension from
+     * @return The extension
+     */
+    public static String getExtension (File file) {
+	    return getExtension(file.getAbsolutePath());
+    }
 }
