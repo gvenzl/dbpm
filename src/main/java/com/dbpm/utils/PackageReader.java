@@ -29,6 +29,7 @@ import java.util.zip.ZipFile;
  */
 public class PackageReader {
 
+	private static final String MANIFEST = "manifest.dpm";
 	private static final int BYTES = 8192;
 	private final File packageFile;
 	private ManifestReader manifest;
@@ -46,7 +47,7 @@ public class PackageReader {
 
 		packageFile = pkg;
 		try (ZipFile pkgZip = new ZipFile(packageFile);
-			 Scanner s = new Scanner(pkgZip.getInputStream(pkgZip.getEntry("manifest.dpm")))) {
+			 Scanner s = new Scanner(pkgZip.getInputStream(pkgZip.getEntry(MANIFEST)))) {
 				// Extract package information
 				s.useDelimiter("\\A");
 				manifest = new ManifestReader(s.next());

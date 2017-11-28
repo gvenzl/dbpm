@@ -34,6 +34,7 @@ import java.util.zip.ZipOutputStream;
 public class PackageBuilder implements Module {
 
 	private static final int BYTES = 8192;
+	private static final String MANIFEST = "manifest.dpm";
 	private final File workDir;
 	private String fullPackageName;
 
@@ -65,7 +66,7 @@ public class PackageBuilder implements Module {
 		Logger.log("Building package...");
 		Logger.verbose("Current directory: " + workDir);
 		
-		File manifestFile = new File (workDir + "/manifest.dpm");
+		File manifestFile = new File (workDir + "/" + MANIFEST);
 		if (!manifestFile.exists()) {
 			Logger.error("Manifest not found!");
 		}
@@ -146,7 +147,7 @@ public class PackageBuilder implements Module {
 
 		// If the directory doesn't contain any files, return an empty list.
 		if (null == files) {
-		    return new ArrayList<File>();
+		    return new ArrayList<>();
         }
 
 		for (File file : files) {
