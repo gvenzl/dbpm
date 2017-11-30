@@ -9,22 +9,23 @@
 
 package com.dbpm.install;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-
 import com.dbpm.DBPM;
 import com.dbpm.Module;
 import com.dbpm.config.Config;
+import com.dbpm.db.DBTYPE;
 import com.dbpm.logger.Logger;
 import com.dbpm.repository.Repository;
 import com.dbpm.utils.PackageReader;
 import com.dbpm.utils.Parameter;
+import com.dbpm.utils.files.ALLOWEDFILETYPES;
+import com.dbpm.utils.files.FileUtils;
+import com.dbpm.utils.files.PHASE;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The Installer takes care of the installation of packages
@@ -120,7 +121,9 @@ public class Installer implements Module {
     }
 
     /**
-     * Installs a package in the database.
+     * Runs the installation routines for a package installation into the database.
+     * Those include saving the package itself into the repository, checking whether the package is already installed,
+     * verifying the dependencies, installing the actual package into the database, and saving the installation success into the repository.
      * @param packageFile The package to be installed
      * @return True if and only if the installation was successful, otherwise false
      */
@@ -162,31 +165,222 @@ public class Installer implements Module {
 
             Logger.verbose("Check whether package is already installed...");
             if (repo.isPackageInstalled(dbName, userName, pkgReader.getPackage())) {
-                Logger.log("Package is already installed.");
+                Logger.log("Package is already installed, doing nothing.");
                 return true;
             }
             Logger.verbose("Package not yet installed, installing...");
 
             Logger.verbose("Check whether dependencies are already installed...");
             if (!repo.verifyDependencies(dbName, userName, pkgReader.getManifest().getDependencies())) {
+                Logger.error("Dependencies not installed!");
                 return false;
             }
+            Logger.verbose("Check whether dependencies are already installed... DONE");
 
-            HashMap<String, String> installFiles = pkgReader.getInstallFiles();
-
-            // TODO: Install file
+            Logger.log("Installing file...");
+            if (!executeInstallation(pkgReader)) {
+                Logger.error("Installation of ", pkgReader.getManifest().getPackage().getFullName(), " has been unsuccessful!");
+                return false;
+            }
+            Logger.log("Installing file... DONE");
 
             Logger.verbose("Save package information in repository...");
             if (!repo.writeEntry(dbName, userName, pkgReader.getPackage())) {
                 Logger.error("Could not save install information in repository!");
+                return false;
             }
             Logger.verbose("Save package information in repository... DONE");
+
             return true;
+
         } catch(Exception e) {
             Logger.error("Cannot install package!");
             Logger.error(e.getMessage());
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Executes the installation of the package into the database.
+     * @param pkgReader The {@link PackageReader} package to be installed
+     * @return True if and only if the installation was successful
+     */
+    private boolean executeInstallation(PackageReader pkgReader) {
+
+        if (!executePreInstallScripts(pkgReader)) {
+            Logger.error("Error executing pre-install scripts, aborting!");
+            return false;
+        }
+
+        if (!executeUpgradeScripts(pkgReader)) {
+            Logger.error("Error executing upgrades scripts!");
+            //Logger.log("Running downgrading files...");
+            //TODO: Run downgrade files
+            //Logger.log("Done, aborting!");
+            return false;
+        }
+
+        if (!executeInstallScripts(pkgReader)) {
+            Logger.error("Error executing install scripts!");
+            //Logger.log("Running uninstall scripts...");
+            //TODO: Run uninstall files and downgrade files
+            //Logger.log("Done, aborting!");
+            return false;
+        }
+
+        if (!executePostInstallScripts(pkgReader)) {
+            Logger.error("Error running post-install scripts!");
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Executes the installation of the package into the database from a particular {@link PHASE} and sequence onwards.
+     * @param pkgReader The {@link PackageReader} package to be installed
+     * @param phase The {@link PHASE} from which to start installing
+     * @param sequence The sequence from which to start, e.g. (001, 002, 003, ...)
+     * @return True if the installation has been successful, otherwise false
+     */
+    public boolean executeInstallation(PackageReader pkgReader, PHASE phase, String sequence) {
+        //TODO: Implement
+        return false;
+    }
+
+    /**
+     * Executes the pre-install scripts of the package.
+     * @param pkgReader The {@link PackageReader} package containing the scripts
+     * @return True if the execution was successful
+     */
+    private boolean executePreInstallScripts(PackageReader pkgReader) {
+        DBTYPE dbType = DBTYPE.valueOf(pkgReader.getManifest().getPackage().getPlatform());
+        HashMap<String, String> preInstallScript = pkgReader.getPreInstallFiles();
+        if (!preInstallScript.isEmpty()) {
+            Logger.verbose("Executing pre-installation scripts...");
+            if (executeScripts(dbType, preInstallScript)) {
+                Logger.verbose("Executing pre-installation scripts... DONE");
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Executes the upgrade scripts of the package.
+     * @param pkgReader The {@link PackageReader} package containing the scripts
+     * @return True if the execution was successful
+     */
+    private boolean executeUpgradeScripts(PackageReader pkgReader) {
+        DBTYPE dbType = DBTYPE.valueOf(pkgReader.getManifest().getPackage().getPlatform());
+        HashMap<String, String> upgradeScripts = pkgReader.getUpgradeFiles();
+        if (!upgradeScripts.isEmpty()) {
+            Logger.verbose("Executing upgrade scripts...");
+            if (executeSQLScripts(dbType, upgradeScripts)) {
+                Logger.verbose("Executing upgrade scripts... DONE");
+            }
+            else {
+                Logger.error("Error executing upgrade scripts!");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Executes the install scripts of the package.
+     * @param pkgReader The {@link PackageReader} package containing the scripts
+     * @return True if the execution was successful
+     */
+    private boolean executeInstallScripts(PackageReader pkgReader) {
+        DBTYPE dbType = DBTYPE.valueOf(pkgReader.getManifest().getPackage().getPlatform());
+        HashMap<String, String> installScripts = pkgReader.getInstallFiles();
+        if (!installScripts.isEmpty()) {
+            Logger.verbose("Executing installation scripts...");
+            if (executeSQLScripts(dbType, installScripts)) {
+                Logger.verbose("Executing installation scripts... DONE");
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Executes the post-install scripts of the package.
+     * @param pkgReader The {@link PackageReader} package containing the scripts
+     * @return True if the execution was successful
+     */
+    private boolean executePostInstallScripts(PackageReader pkgReader) {
+        DBTYPE dbType = DBTYPE.valueOf(pkgReader.getManifest().getPackage().getPlatform());
+        HashMap<String, String> postInstallScripts = pkgReader.getPostInstallFiles();
+        if (!postInstallScripts.isEmpty()) {
+            Logger.verbose("Executing post-installation scripts...");
+            if (executeScripts(dbType, postInstallScripts)) {
+                Logger.verbose("Executing post-installation scripts... DONE");
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Executes all .sql scripts.
+     * @param dbType The database type to execute against
+     * @param scripts The scripts to be executed
+     * @return True if the execution has been successful
+     */
+    private boolean executeSQLScripts(DBTYPE dbType, HashMap<String, String> scripts) {
+
+        HashMap<String, String> sqlEntries = new HashMap<>();
+
+        // Iterate over all entries and only extract SQL files
+        for (Map.Entry<String, String> entry : scripts.entrySet()) {
+            if (FileUtils.getExtension(entry.getKey()).toUpperCase().equals(ALLOWEDFILETYPES.SQL.name())) {
+                sqlEntries.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return executeScripts(dbType, sqlEntries);
+    }
+
+    /**
+     * Executes installation scripts.
+     * @param dbType The database type to execute against
+     * @param scripts The scripts files to be executed
+     * @return True if the execution has been successful
+     */
+    private boolean executeScripts(DBTYPE dbType, HashMap<String, String> scripts) {
+
+        Logger.log("Executing scripts...");
+        // Loop over scripts and execute them
+        //TODO: Parallelize scripts with same number
+        for (Map.Entry<String, String> entry : scripts.entrySet()) {
+            String fileName = entry.getKey();
+            Logger.verbose("Executing file ", fileName);
+
+            switch(ALLOWEDFILETYPES.valueOf(FileUtils.getExtension(fileName).toUpperCase())) {
+                case SQL: {
+
+                    break;
+                }
+                case SYS: {
+                    break;
+                }
+                case CMD: {
+                    break;
+                }
+            }
+        }
+        return false;
     }
 }
