@@ -83,15 +83,10 @@ public class PackageValidator {
      */
     private static boolean isAllowedFile(String fileName, String parentDir) {
 
-
         String pattern = "";
 
-        // Only manifest.dpm is allowed in the root directory
-        if (parentDir.isEmpty()) {
-            pattern = "manifest.dpm";
-        }
         // Preinstall and Postinstall allow NNN.*.cmd, NNN.*.sql, and NNN.*.sys files.
-        else if (parentDir.equals(PHASE.PREINSTALL.name()) || parentDir.equals(PHASE.POSTINSTALL.name())) {
+        if (parentDir.equals(PHASE.PREINSTALL.name()) || parentDir.equals(PHASE.POSTINSTALL.name())) {
             pattern = "(\\d\\d\\d\\.)(.+)(\\.)(cmd|sql|sys)";
         }
         // Upgrade, Install, Rollback, and Downgrade only accept NNN.*.sql files
@@ -99,6 +94,11 @@ public class PackageValidator {
                  parentDir.equals(PHASE.ROLLBACK.name()) || parentDir.equals(PHASE.DOWNGRADE.name())) {
             pattern = "(\\d\\d\\d\\.)(.+)(\\.)(sql)";
         }
+        // Only manifest.dpm is allowed in the root directory
+        else {
+            pattern = "manifest.dpm";
+        }
+
 
         return fileName.matches(pattern);
     }
@@ -126,10 +126,11 @@ public class PackageValidator {
      * @return True if the Directory structure is valid
      */
     public static boolean validateDirectoryStructure(File dir) throws IllegalFileException, IllegalFolderException {
+
         File[] files = dir.listFiles();
 
         // If directory is empty or not a directory, return false
-        if (files == null) {
+        if (null == files) {
             return false;
         }
 
@@ -138,12 +139,13 @@ public class PackageValidator {
             if (file.isDirectory()) {
                 // Throw exception if folder is not allowed!
                 if (!isAllowedDirectory(file.getName())) {
-                    throw new IllegalFolderException("Folder " + file.getName() + " is invalid!");
+                    throw new IllegalFolderException("Folder " + file.getName() + " is not valid!");
                 }
                 validateDirectoryStructure(file);
             } else {
+                //TODO: Filter out root directory
                 if (!isAllowedFile(file.getName(), dir.getName())) {
-                    throw new IllegalFileException("File " + file.getName() + " has not a valid extension!");
+                    throw new IllegalFileException("File " + file.getName() + " is not a valid file!");
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.dbpm.build;
 
 import com.dbpm.logger.Verbose;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -12,6 +13,6 @@ public class PackageBuilderTest {
         Verbose.getInstance().setVerbose(true);
         PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageCorrectFormat/");
         builder.run();
-        new File(builder.getPackageName()).delete();
+        Assert.assertTrue(new File(builder.getPackageName()).delete());
     }
 }
