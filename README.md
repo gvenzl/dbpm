@@ -2,9 +2,9 @@
 Database Package Manager (by gvenzl - 2016)
 
 ## Overview
-Database Package Manager lets you create, distribute and install packages for Databases. The idea is to provide similar functionality to package database code just like binaries in Unix environments. dbpm is written in Java, making it easy to run it on any platform and against any Database that complies with the JDBC standard.
+Database Package Manager lets you create, distribute and install packages for databases. The idea is to provide similar functionality to package database code just like binaries in Unix environments. dbpm is written in Java, making it easy to run it on any platform and against any database that complies with the JDBC standard.
 
-The dbpm package format is **NAME-MAJOR.MINOR.PATH-PLATFORM.dbpkg**  
+The dbpm package format is **NAME-MAJOR.MINOR.PATCH-PLATFORM.dbpkg**  
 
 **NAME:** Package name  
 **MAJOR:** Major version  
@@ -13,7 +13,7 @@ The dbpm package format is **NAME-MAJOR.MINOR.PATH-PLATFORM.dbpkg**
 **PLATFORM:** The Database platform (i.e. Oracle, MySQL, PostgreSQL)  
 **.dbpkg:** Extension marking the file as dbpm file  
 
-***The package numbers must comply with [Semantic Versioning 2.0.0](http://semver.org/)***
+***The package numbers (major, minor, and patch) must comply with [Semantic Versioning 2.0.0](http://semver.org/)***
 
 ## Package format
 In order to build a package archive (.dbpkg) the package source folder must have following structure:
@@ -101,9 +101,9 @@ Any dependencies will be verified first and if not present the installation abor
 **version:**  
 &nbsp;&nbsp;&nbsp;**major:** Major version of the package  
 &nbsp;&nbsp;&nbsp;**minor:** Minor version of the package  
-&nbsp;&nbsp;&nbsp;**patch:** Path version of the package  
+&nbsp;&nbsp;&nbsp;**patch:** Patch version of the package  
 
-**dependencies:** dbpm allows you to specify depending packages that have to be present before your package is installed. This is the fundamental cornerstone of modularisation. If your package depends on one or more packages, specify those dependency packages and versions here to guarantee its presence.  
+**dependencies:** dbpm allows you to specify depending packages that have to be present before your package is installed. This is the fundamental cornerstone of modularisation. If the package you are providing depends on one or more other packages specify those dependency packages and versions here to guarantee they are present.  
 &nbsp;&nbsp;&nbsp;**name:** Name of the required package to be present.  
 &nbsp;&nbsp;&nbsp;**min (mandatory):** The minimal version of the package  
 &nbsp;&nbsp;&nbsp;Only the `major` version number is required, `minor` and `patch` are optional. Whatever version is specified, dbpm will automatically check whether the version requirement is fulfilled.  
