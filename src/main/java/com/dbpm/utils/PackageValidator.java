@@ -142,7 +142,6 @@ public class PackageValidator {
                 }
                 validateDirectoryStructure(file);
             } else {
-                //TODO: Filter out root directory
                 if (!isAllowedFile(file.getName(), dir.getName())) {
                     throw new IllegalFileException("File " + file.getName() + " is not a valid file!");
                 }
