@@ -23,7 +23,6 @@ public class DBExecutor {
     private final DbType dbType;
 
     private Connection conn;
-    private Connection adminConn;
 
     /**
      * Creates a new DBExecutor object.
@@ -44,10 +43,10 @@ public class DBExecutor {
         this.port = port;
         this.dbName = dbName;
 
-        this.conn = getConnection(this.userName, this.password);
+        this.conn = getConnection();
     }
 
-    private Connection getConnection(String username, String password) throws SQLException {
+    private Connection getConnection() throws SQLException {
 
         StringBuilder sb = new StringBuilder();
         sb.append("jdbc:");
@@ -74,7 +73,7 @@ public class DBExecutor {
         sb.append("/");
         sb.append(dbName);
 
-        Connection conn = DriverManager.getConnection(sb.toString(), username, password);
+        Connection conn = DriverManager.getConnection(sb.toString(), userName, password);
         conn.setAutoCommit(false);
 
         return conn;
