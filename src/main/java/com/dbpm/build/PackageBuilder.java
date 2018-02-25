@@ -14,6 +14,7 @@ import com.dbpm.logger.Logger;
 import com.dbpm.repository.Package;
 import com.dbpm.utils.ManifestReader;
 import com.dbpm.utils.PackageValidator;
+import com.dbpm.utils.files.FileType;
 import com.dbpm.utils.files.IllegalFileException;
 import com.dbpm.utils.files.IllegalFolderException;
 
@@ -34,7 +35,6 @@ import java.util.zip.ZipOutputStream;
 public class PackageBuilder implements Module {
 
 	private static final int BYTES = 8192;
-	private static final String MANIFEST = "manifest.dpm";
 	private final File workDir;
 	private String fullPackageName;
 
@@ -53,20 +53,31 @@ public class PackageBuilder implements Module {
 		this.workDir =  new File(workDir);
 	}
 
+	/**
+	 * Returns the absolute path of the working directory.
+	 * @return The absolute path of the working directory.
+	 */
 	public String getWorkDir() {
 		return workDir.getAbsolutePath();
 	}
 
+    /**
+     * Returns the package name.
+     * @return The package name.
+     */
 	String getPackageName() {
 	    return fullPackageName;
     }
 
+    /**
+     * Kicks off the main building process.
+     */
 	@Override
 	public void run() {
 		Logger.log("Building package...");
 		Logger.verbose("Current directory: " + workDir);
 		
-		File manifestFile = new File (workDir + "/" + MANIFEST);
+		File manifestFile = new File (workDir + "/" + FileType.MANIFEST.getValue());
 		if (!manifestFile.exists()) {
 			Logger.error("Manifest not found!");
 		}

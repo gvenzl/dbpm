@@ -11,7 +11,8 @@ package com.dbpm.utils;
 
 import com.dbpm.logger.Logger;
 import com.dbpm.repository.Package;
-import com.dbpm.utils.files.PHASE;
+import com.dbpm.utils.files.FileType;
+import com.dbpm.utils.files.Phase;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,6 @@ import java.util.zip.ZipFile;
  */
 public class PackageReader {
 
-	private static final String MANIFEST = "manifest.dpm";
 	private static final int BYTES = 8192;
 	private final File packageFile;
 	private ManifestReader manifest;
@@ -47,7 +47,7 @@ public class PackageReader {
 
 		packageFile = pkg;
 		try (ZipFile pkgZip = new ZipFile(packageFile);
-			 Scanner s = new Scanner(pkgZip.getInputStream(pkgZip.getEntry(MANIFEST)))) {
+			 Scanner s = new Scanner(pkgZip.getInputStream(pkgZip.getEntry(FileType.MANIFEST.getValue())))) {
 				// Extract package information
 				s.useDelimiter("\\A");
 				manifest = new ManifestReader(s.next());
@@ -77,7 +77,7 @@ public class PackageReader {
 	 * @param phase An optional directory name within the zip file
 	 * @return A list of files form the zip file
 	 */
-	private HashMap<String, String> getFiles(PHASE phase) {
+	private HashMap<String, String> getFiles(Phase phase) {
 		HashMap<String, String> entries = new HashMap<>();
 		
 		try(ZipFile pkgZip = new ZipFile(packageFile)) {
@@ -120,50 +120,50 @@ public class PackageReader {
 	}
 
     /**
-     * Retrieves all files for the PREINSTALL {@link PHASE}.
+     * Retrieves all files for the PREINSTALL {@link Phase}.
      * @return A collection containing all pre-installation files
      */
 	public HashMap<String, String> getPreInstallFiles() {
-		return getFiles(PHASE.PREINSTALL);
+		return getFiles(Phase.PREINSTALL);
 	}
 
     /**
-     * Retrieves all files for the UPGRADE {@link PHASE}.
+     * Retrieves all files for the UPGRADE {@link Phase}.
      * @return A collection containing all upgrade files
      */
 	public HashMap<String, String> getUpgradeFiles() {
-		return getFiles(PHASE.UPGRADE);
+		return getFiles(Phase.UPGRADE);
 	}
 
     /**
-     * Retrieves all files for the INSTALL {@link PHASE}.
+     * Retrieves all files for the INSTALL {@link Phase}.
      * @return A collection containing all installation files
      */
 	public HashMap<String, String> getInstallFiles() {
-		return getFiles(PHASE.INSTALL);
+		return getFiles(Phase.INSTALL);
 	}
 
     /**
-     * Retrieves all files for the ROLLBACK {@link PHASE}.
+     * Retrieves all files for the ROLLBACK {@link Phase}.
      * @return A collection containing all rollback files
      */
 	public HashMap<String, String> getRollbackFiles() {
-		return getFiles(PHASE.ROLLBACK);
+		return getFiles(Phase.ROLLBACK);
 	}
 
     /**
-     * Retrieves all files for the DOWNGRADE {@link PHASE}.
+     * Retrieves all files for the DOWNGRADE {@link Phase}.
      * @return A collection containing all downgrade files
      */
 	public HashMap<String, String> getDowngradeFiles() {
-		return getFiles(PHASE.DOWNGRADE);
+		return getFiles(Phase.DOWNGRADE);
 	}
 
     /**
-     * Retrieves all files for the POSTINSTALL {@link PHASE}.
+     * Retrieves all files for the POSTINSTALL {@link Phase}.
      * @return A collection containing all post-install files
      */
 	public HashMap<String, String> getPostInstallFiles() {
-		return getFiles(PHASE.POSTINSTALL);
+		return getFiles(Phase.POSTINSTALL);
 	}
 }

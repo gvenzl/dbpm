@@ -12,14 +12,14 @@ package com.dbpm.install;
 import com.dbpm.DBPM;
 import com.dbpm.Module;
 import com.dbpm.config.Config;
-import com.dbpm.db.DBTYPE;
+import com.dbpm.db.DbType;
 import com.dbpm.logger.Logger;
 import com.dbpm.repository.Repository;
 import com.dbpm.utils.PackageReader;
 import com.dbpm.utils.Parameter;
-import com.dbpm.utils.files.ALLOWEDFILETYPES;
+import com.dbpm.utils.files.FileType;
 import com.dbpm.utils.files.FileUtils;
-import com.dbpm.utils.files.PHASE;
+import com.dbpm.utils.files.Phase;
 
 import java.io.File;
 import java.io.IOException;
@@ -238,13 +238,13 @@ public class Installer implements Module {
     }
 
     /**
-     * Executes the installation of the package into the database from a particular {@link PHASE} and sequence onwards.
+     * Executes the installation of the package into the database from a particular {@link Phase} and sequence onwards.
      * @param pkgReader The {@link PackageReader} package to be installed
-     * @param phase The {@link PHASE} from which to start installing
+     * @param phase The {@link Phase} from which to start installing
      * @param sequence The sequence from which to start, e.g. (001, 002, 003, ...)
      * @return True if the installation has been successful, otherwise false
      */
-    public boolean executeInstallation(PackageReader pkgReader, PHASE phase, String sequence) {
+    public boolean executeInstallation(PackageReader pkgReader, Phase phase, String sequence) {
         //TODO: Implement
         return false;
     }
@@ -255,7 +255,7 @@ public class Installer implements Module {
      * @return True if the execution was successful
      */
     private boolean executePreInstallScripts(PackageReader pkgReader) {
-        DBTYPE dbType = DBTYPE.valueOf(pkgReader.getManifest().getPackage().getPlatform());
+        DbType dbType = DbType.valueOf(pkgReader.getManifest().getPackage().getPlatform());
         HashMap<String, String> preInstallScript = pkgReader.getPreInstallFiles();
         if (!preInstallScript.isEmpty()) {
             Logger.verbose("Executing pre-installation scripts...");
@@ -276,7 +276,7 @@ public class Installer implements Module {
      * @return True if the execution was successful
      */
     private boolean executeUpgradeScripts(PackageReader pkgReader) {
-        DBTYPE dbType = DBTYPE.valueOf(pkgReader.getManifest().getPackage().getPlatform());
+        DbType dbType = DbType.valueOf(pkgReader.getManifest().getPackage().getPlatform());
         HashMap<String, String> upgradeScripts = pkgReader.getUpgradeFiles();
         if (!upgradeScripts.isEmpty()) {
             Logger.verbose("Executing upgrade scripts...");
@@ -297,7 +297,7 @@ public class Installer implements Module {
      * @return True if the execution was successful
      */
     private boolean executeInstallScripts(PackageReader pkgReader) {
-        DBTYPE dbType = DBTYPE.valueOf(pkgReader.getManifest().getPackage().getPlatform());
+        DbType dbType = DbType.valueOf(pkgReader.getManifest().getPackage().getPlatform());
         HashMap<String, String> installScripts = pkgReader.getInstallFiles();
         if (!installScripts.isEmpty()) {
             Logger.verbose("Executing installation scripts...");
@@ -318,7 +318,7 @@ public class Installer implements Module {
      * @return True if the execution was successful
      */
     private boolean executePostInstallScripts(PackageReader pkgReader) {
-        DBTYPE dbType = DBTYPE.valueOf(pkgReader.getManifest().getPackage().getPlatform());
+        DbType dbType = DbType.valueOf(pkgReader.getManifest().getPackage().getPlatform());
         HashMap<String, String> postInstallScripts = pkgReader.getPostInstallFiles();
         if (!postInstallScripts.isEmpty()) {
             Logger.verbose("Executing post-installation scripts...");
@@ -339,13 +339,13 @@ public class Installer implements Module {
      * @param scripts The scripts to be executed
      * @return True if the execution has been successful
      */
-    private boolean executeSQLScripts(DBTYPE dbType, HashMap<String, String> scripts) {
+    private boolean executeSQLScripts(DbType dbType, HashMap<String, String> scripts) {
 
         HashMap<String, String> sqlEntries = new HashMap<>();
 
         // Iterate over all entries and only extract SQL files
         for (Map.Entry<String, String> entry : scripts.entrySet()) {
-            if (FileUtils.getExtension(entry.getKey()).toUpperCase().equals(ALLOWEDFILETYPES.SQL.name())) {
+            if (FileUtils.getExtension(entry.getKey()).toLowerCase().equals(FileType.SQL.toString())) {
                 sqlEntries.put(entry.getKey(), entry.getValue());
             }
         }
@@ -359,18 +359,19 @@ public class Installer implements Module {
      * @param scripts The scripts files to be executed
      * @return True if the execution has been successful
      */
-    private boolean executeScripts(DBTYPE dbType, HashMap<String, String> scripts) {
+    private boolean executeScripts(DbType dbType, HashMap<String, String> scripts) {
 
         Logger.log("Executing scripts...");
         // Loop over scripts and execute them
         //TODO: Parallelize scripts with same number
+        //TODO: Verify that files are iterated in correct order
         for (Map.Entry<String, String> entry : scripts.entrySet()) {
             String fileName = entry.getKey();
             Logger.verbose("Executing file ", fileName);
 
-            switch(ALLOWEDFILETYPES.valueOf(FileUtils.getExtension(fileName).toUpperCase())) {
+            //TODO: Implement scripts execution
+            switch(FileType.getType(FileUtils.getExtension(fileName))) {
                 case SQL: {
-
                     break;
                 }
                 case SYS: {

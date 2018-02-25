@@ -20,7 +20,7 @@ public class DBExecutor {
     private final String port;
     private final String dbName;
 
-    private final DBTYPE dbType;
+    private final DbType dbType;
 
     private Connection conn;
     private Connection adminConn;
@@ -35,7 +35,7 @@ public class DBExecutor {
      * @param dbName The database name
      * @throws SQLException Any error occurring during the connection attempt
      */
-    public DBExecutor(DBTYPE dbType, String userName, String password, String hostName, String port, String dbName)
+    public DBExecutor(DbType dbType, String userName, String password, String hostName, String port, String dbName)
             throws SQLException {
         this.dbType = dbType;
         this.userName = userName;

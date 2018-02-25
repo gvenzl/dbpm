@@ -3,12 +3,12 @@
 * author:  gvenzl
 * created: 26 Mar 2016
 *
-* name: ALLOWEDFOLDERS.java
+* name: Phase.java
 *
 */
 
 package com.dbpm.utils.files;
 
-public enum PHASE {
+public enum Phase {
 	PREINSTALL, INSTALL, UPGRADE, ROLLBACK, DOWNGRADE, POSTINSTALL
 }

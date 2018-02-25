@@ -9,26 +9,20 @@
 
 package com.dbpm.repository;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import com.dbpm.logger.Logger;
+import com.dbpm.utils.files.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.dbpm.logger.Logger;
-import com.dbpm.utils.files.FileUtils;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class FileRepository implements Repository {
 	
@@ -77,12 +71,8 @@ public class FileRepository implements Repository {
 			}
 		}
 
-		if (!store.mkdir()) {
-			return false;
-		}
-
-		return true;
-	}
+        return store.mkdir();
+    }
 
 	@Override
 	public boolean writeEntry(String db, String schema, Package pkg) {
@@ -119,7 +109,7 @@ public class FileRepository implements Repository {
 	
 	private Element findNode(Element root, String nodeName, String name) {
 		NodeList nodeList = root.getElementsByTagName(nodeName);
-		for (int i=0;i<nodeList.getLength();i++) {
+		for (int i=0; i<nodeList.getLength(); i++) {
 			if(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue().equals(name)) {
 				return (Element) nodeList.item(i);
 			}

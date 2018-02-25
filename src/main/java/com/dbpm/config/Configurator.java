@@ -10,7 +10,7 @@
 package com.dbpm.config;
 
 import com.dbpm.Module;
-import com.dbpm.db.DBTYPE;
+import com.dbpm.db.DbType;
 import com.dbpm.logger.Logger;
 import com.dbpm.utils.Parameter;
 
@@ -57,7 +57,7 @@ public class Configurator implements Module {
 					platform = args[++i];
 					
 					boolean supported = false;
-					for (DBTYPE type : DBTYPE.values()) {
+					for (DbType type : DbType.values()) {
 						if (platform.equals(type.name().toLowerCase())) {
 							supported = true;
 							break;

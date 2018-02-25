@@ -9,9 +9,10 @@
 
 package com.dbpm.utils;
 
+import com.dbpm.utils.files.FileType;
 import com.dbpm.utils.files.IllegalFileException;
 import com.dbpm.utils.files.IllegalFolderException;
-import com.dbpm.utils.files.PHASE;
+import com.dbpm.utils.files.Phase;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,19 +87,18 @@ public class PackageValidator {
         String pattern = "";
 
         // Preinstall and Postinstall allow NNN.*.cmd, NNN.*.sql, and NNN.*.sys files.
-        if (parentDir.equals(PHASE.PREINSTALL.name()) || parentDir.equals(PHASE.POSTINSTALL.name())) {
-            pattern = "(\\d\\d\\d\\.)(.+)(\\.)(cmd|sql|sys)";
+        if (parentDir.equals(Phase.PREINSTALL.name()) || parentDir.equals(Phase.POSTINSTALL.name())) {
+            pattern = String.format("(\\d\\d\\d\\.)(.+)(\\.)(%s|%s|%s)", FileType.CMD, FileType.SQL, FileType.SYS);
         }
         // Upgrade, Install, Rollback, and Downgrade only accept NNN.*.sql files
-        else if (parentDir.equals(PHASE.UPGRADE.name()) || parentDir.equals(PHASE.INSTALL.name()) ||
-                 parentDir.equals(PHASE.ROLLBACK.name()) || parentDir.equals(PHASE.DOWNGRADE.name())) {
-            pattern = "(\\d\\d\\d\\.)(.+)(\\.)(sql)";
+        else if (parentDir.equals(Phase.UPGRADE.name()) || parentDir.equals(Phase.INSTALL.name()) ||
+                 parentDir.equals(Phase.ROLLBACK.name()) || parentDir.equals(Phase.DOWNGRADE.name())) {
+            pattern = String.format("(\\d\\d\\d\\.)(.+)(\\.)(%s)", FileType.SQL);
         }
         // Only manifest.dpm is allowed in the root directory
         else {
-            pattern = "manifest.dpm";
+            pattern = FileType.MANIFEST.getValue();
         }
-
 
         return fileName.matches(pattern);
     }
@@ -110,7 +110,7 @@ public class PackageValidator {
      */
     private static boolean isAllowedDirectory(String directoryName) {
 
-        for (PHASE folderName : PHASE.values()) {
+        for (Phase folderName : Phase.values()) {
             if (folderName.name().equals(directoryName)) {
                 return true;
             }
@@ -122,16 +122,15 @@ public class PackageValidator {
      * Validates a given directory structure whether or not it conforms to the DBPM format.
      * @param dir The directory to check
      * @throws IllegalFileException When an illegal file has been found
-     * @throws IllegalFolderException When an illegal folder has been found
-     * @return True if the Directory structure is valid
+     * @throws IllegalFolderException When an illegal folder has been found or the folder is empty
      */
-    public static boolean validateDirectoryStructure(File dir) throws IllegalFileException, IllegalFolderException {
+    public static void validateDirectoryStructure(File dir) throws IllegalFileException, IllegalFolderException {
 
         File[] files = dir.listFiles();
 
         // If directory is empty or not a directory, return false
         if (null == files) {
-            return false;
+            throw new IllegalFolderException("Folder " + dir.getName() + " is empty!");
         }
 
         for (File file : files) {
@@ -149,6 +148,5 @@ public class PackageValidator {
                 }
             }
         }
-        return true;
     }
 }

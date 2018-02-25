@@ -9,6 +9,6 @@
 
 package com.dbpm.db;
 
-public enum DBTYPE {
+public enum DbType {
 	ORACLE, MYSQL, POSTGRES
 }
