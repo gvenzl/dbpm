@@ -9,22 +9,22 @@
 
 package com.dbpm.repository;
 
-import static org.junit.Assert.*;
+import com.dbpm.utils.files.FileType;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.dbpm.DBPM;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FileRepositoryTest{
 
-	private static final String TESTPACKAGE = "Testpackage-1.0.0-oracle" + DBPM.PKG_FILE_EXTENSION;
+	private static final String TESTPACKAGE = "Testpackage-1.0.0-oracle." + FileType.DBPKG;
 	private final String repoName = "testrepo.xml";
 	private final String storeName = "store";
 	
@@ -52,14 +52,14 @@ public class FileRepositoryTest{
 	}
 	
 	@Test
-	public void test_isPackageInstalledPositive() throws Exception{
+	public void test_isPackageInstalledPositive() {
 		repo.createRepo();
 		assertTrue(repo.writeEntry("testDB", "TestSchema", new Package(TESTPACKAGE)));
 		assertTrue(repo.isPackageInstalled("testDB", "TestSchema", new Package(TESTPACKAGE)));
 	}
 	
 	@Test
-	public void test_isPackageInstalledNegative() throws Exception {
+	public void test_isPackageInstalledNegative() {
 		repo.createRepo();
 		// No database or schema exist
 		assertFalse(repo.isPackageInstalled("testDB", "TestSchema", new Package(TESTPACKAGE)));
@@ -67,7 +67,7 @@ public class FileRepositoryTest{
 		assertTrue(repo.writeEntry("testDB", "TestSchema", new Package(TESTPACKAGE)));
 		assertFalse(repo.isPackageInstalled("testDB", "OtherTestSchema", new Package(TESTPACKAGE)));
 		// Schema and DB exist but package does not exist
-		assertFalse(repo.isPackageInstalled("testDB", "TestSchema", new Package("dummy-9.9.9-mysql" + DBPM.PKG_FILE_EXTENSION)));
+		assertFalse(repo.isPackageInstalled("testDB", "TestSchema", new Package("dummy-9.9.9-mysql." + FileType.DBPKG)));
 	}
 	
 	@Test

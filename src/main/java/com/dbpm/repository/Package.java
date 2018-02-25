@@ -9,7 +9,7 @@
 
 package com.dbpm.repository;
 
-import com.dbpm.DBPM;
+import com.dbpm.utils.files.FileType;
 
 public class Package {
 
@@ -35,7 +35,13 @@ public class Package {
 	}
 
 	public String getFullName() {
-		return name + "-" + major + "." + minor + "." + patch + "-" +  platform + DBPM.PKG_FILE_EXTENSION;
+		return new StringBuilder(name).append("-")
+                    .append(major).append(".")
+                    .append(minor).append(".")
+                    .append(patch).append("-")
+                    .append(platform).append(".")
+                    .append(FileType.DBPKG.getValue())
+                    .toString();
 	}
 	
 	public String getName() {

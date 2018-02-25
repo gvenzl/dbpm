@@ -11,6 +11,8 @@ package com.dbpm.utils;
 
 public final class Parameter {
 
+	//TODO: Evalute whether this should be implemented as ENUM
+
 	public static final String USER 			= "-user";
 	public static final String ADMINUSER 		= "-adminUser";
 	public static final String PASSWORD 		=  "-password";

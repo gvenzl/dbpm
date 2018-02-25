@@ -9,17 +9,16 @@
 
 package com.dbpm.repository;
 
-import static org.junit.Assert.*;
-
+import com.dbpm.utils.files.FileType;
 import org.junit.Test;
 
-import com.dbpm.DBPM;
+import static org.junit.Assert.assertEquals;
 
 public class PackageTest {
 
 	@Test
 	public void test_PackageConstructor() {
-		String testName = "Test-1.2.3-oracle" + DBPM.PKG_FILE_EXTENSION;
+		String testName = "Test-1.2.3-oracle." + FileType.DBPKG;
 		Package testPkg = new Package(testName);
 		
 		assertEquals("Test", testPkg.getName());

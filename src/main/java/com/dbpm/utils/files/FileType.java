@@ -14,7 +14,8 @@ public enum FileType {
 	SQL("sql"),
     SYS("sys"),
     CMD("cmd"),
-    MANIFEST("manifest.dpm");
+    MANIFEST("manifest.dpm"),
+    DBPKG("dbpkg");
 
 	private final String value;
 

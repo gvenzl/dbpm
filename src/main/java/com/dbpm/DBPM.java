@@ -18,8 +18,6 @@ import com.dbpm.utils.Parameter;
 
 public class DBPM {
 
-	public static final String PKG_FILE_EXTENSION = ".dbpkg";
-	
 	static class HelpPrinter implements Module {
 		
 		private static String msg;

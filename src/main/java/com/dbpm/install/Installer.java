@@ -9,7 +9,6 @@
 
 package com.dbpm.install;
 
-import com.dbpm.DBPM;
 import com.dbpm.Module;
 import com.dbpm.config.Config;
 import com.dbpm.db.DbType;
@@ -50,7 +49,7 @@ public class Installer implements Module {
      */
     public Installer (String[] args) throws IllegalArgumentException {
         // Ignore first parameter as this one was already checked by DBPM in order to call installer
-        for (int i=1;i<args.length;i++) {
+        for (int i=1; i<args.length; i++) {
             switch (args[i]) {
                 case Parameter.USER:
                     userName = args[++i];
@@ -84,7 +83,8 @@ public class Installer implements Module {
                         // TODO: If file does not exist, check repository for file
                         packageFile = new File(args[i]);
                         if (!packageFile.exists()) {
-                            packageFile = new File(args[i] + DBPM.PKG_FILE_EXTENSION);
+                            // If file not found it might have been passed without extension
+                            packageFile = new File(args[i] + "." + FileType.DBPKG);
                             if (!packageFile.exists()) {
                                 throw new IllegalArgumentException(args[i] + " is not a valid file name!");
                             }
@@ -102,7 +102,7 @@ public class Installer implements Module {
         if (null == packageFile) {
             dir = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
             try {
-                DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*" + DBPM.PKG_FILE_EXTENSION);
+                DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*" + FileType.DBPKG);
                 // Install each dbpm package in the current working directory
                 // TODO: Build dependency tree instead and call install with right order
                 for (Path path : stream) {
