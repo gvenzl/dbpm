@@ -20,6 +20,7 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -178,6 +179,24 @@ public class FileRepository implements Repository {
 			pkgFile.delete();
 			return false;
 		}
+	}
+
+	/**
+	 * Gets a package form the repository.
+	 *
+	 * @param pkg The package to load from the repository
+	 * @return The package file
+	 * @throws FileNotFoundException If the package file can't be found
+	 */
+	@Override
+	public File getPackage(Package pkg) throws FileNotFoundException {
+		File packageFile = new File(store.getAbsolutePath() + "/" + pkg.getFullName());
+		if (packageFile.exists()) {
+		    return packageFile;
+        }
+        else {
+		    throw new FileNotFoundException("File " + pkg.getFullName() + " not in repository");
+        }
 	}
 
 	private NodeList getPackageTree(String dbName, String schemaName) {

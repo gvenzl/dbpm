@@ -13,6 +13,7 @@ import com.dbpm.Module;
 import com.dbpm.config.Config;
 import com.dbpm.db.DbType;
 import com.dbpm.logger.Logger;
+import com.dbpm.repository.Package;
 import com.dbpm.repository.Repository;
 import com.dbpm.utils.PackageReader;
 import com.dbpm.utils.Parameter;
@@ -21,6 +22,7 @@ import com.dbpm.utils.files.FileUtils;
 import com.dbpm.utils.files.Phase;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
@@ -78,15 +80,33 @@ public class Installer implements Module {
                 default:
                     // Unknown parameter
                     if (args[i].charAt(0) == '-') {
-                        throw new IllegalArgumentException(args[i] + " is not a valid argument for install");
-                    } else {
-                        // TODO: If file does not exist, check repository for file
-                        packageFile = new File(args[i]);
+                        throw new IllegalArgumentException(args[i] + " is not a valid argument for install.");
+                    }
+                    else {
+                        String packageName = args[i];
+
+                        // If extensions hasn't been passed on, automatically add it
+                        if (!packageName.endsWith("." + FileType.DBPKG.getValue())) {
+                            packageName = packageName + "." + FileType.DBPKG.getValue();
+                        }
+
+                        packageFile = new File(packageName);
                         if (!packageFile.exists()) {
-                            // If file not found it might have been passed without extension
-                            packageFile = new File(args[i] + "." + FileType.DBPKG);
-                            if (!packageFile.exists()) {
-                                throw new IllegalArgumentException(args[i] + " is not a valid file name!");
+                            Logger.verbose("File " + packageFile.getName() + " not found in location.");
+                            Logger.verbose("Checking repository...");
+
+                            // If file can't be found, try to get it from the repository
+                            try {
+                                packageFile = Config.getRepository().getPackage(new Package(packageName));
+                                Logger.verbose("Package loaded from repository.");
+                            }
+                            catch (FileNotFoundException e) {
+                                throw new IllegalArgumentException(args[i] + " does not exist!");
+                            }
+                            catch (IOException e) {
+                                Logger.verbose("Repository cannot be opened:");
+                                Logger.verbose(e.getMessage());
+                                throw new IllegalArgumentException(args[i] + " does not exist!");
                             }
                         }
                     }
