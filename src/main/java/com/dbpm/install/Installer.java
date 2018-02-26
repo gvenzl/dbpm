@@ -15,6 +15,7 @@ import com.dbpm.db.DbType;
 import com.dbpm.logger.Logger;
 import com.dbpm.repository.Package;
 import com.dbpm.repository.Repository;
+import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.PackageReader;
 import com.dbpm.utils.Parameter;
 import com.dbpm.utils.files.FileType;
@@ -116,7 +117,7 @@ public class Installer implements Module {
     }
 
     @Override
-    public void run() {
+    public int run() {
         Path dir;
         // if no file has been passed on, install all dbpkg files
         if (null == packageFile) {
@@ -129,13 +130,20 @@ public class Installer implements Module {
                     installPackage(new File(path.getParent() + File.separator + path.getFileName()));
                 }
                 stream.close();
+                return ExitCode.EXIT_SUCCESSFUL.getValue();
             } catch (IOException e) {
                 Logger.error("Cannot read package file!");
                 Logger.error(e.getMessage());
+                return ExitCode.EXIT_INSTALL_CANT_READ_PACKAGE.getValue();
             }
         }
         else {
-            installPackage(packageFile);
+            if (installPackage(packageFile)) {
+                return ExitCode.EXIT_SUCCESSFUL.getValue();
+            }
+            else {
+                return ExitCode.EXIT_INSTALL_COULD_NOT_INSTALL_PACKAGE.getValue();
+            }
         }
 
     }

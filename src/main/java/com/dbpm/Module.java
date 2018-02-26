@@ -16,5 +16,11 @@ package com.dbpm;
  */
 public interface Module {
 
-	void run();
+	/**
+	 * Implements the main run method.
+	 * @return The return code from the module.<br/>
+     * 0 = successful execution.<br/>
+     * >0 = unsuccessful execution
+	 */
+	int run();
 }

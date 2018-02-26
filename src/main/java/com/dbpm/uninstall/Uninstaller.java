@@ -10,6 +10,7 @@
 package com.dbpm.uninstall;
 
 import com.dbpm.Module;
+import com.dbpm.utils.ExitCode;
 
 public class Uninstaller implements Module {
 	
@@ -18,8 +19,8 @@ public class Uninstaller implements Module {
 	}
 
 	@Override
-	public void run() {
-
+	public int run() {
+		return ExitCode.EXIT_SUCCESSFUL.getValue();
 	}
 
 }

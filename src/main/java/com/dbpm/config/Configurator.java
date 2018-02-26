@@ -12,6 +12,7 @@ package com.dbpm.config;
 import com.dbpm.Module;
 import com.dbpm.db.DbType;
 import com.dbpm.logger.Logger;
+import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.Parameter;
 
 public class Configurator implements Module {
@@ -88,12 +89,14 @@ public class Configurator implements Module {
 	}
 	
 	@Override
-	public void run() {
+	public int run() {
 		Config config;
 		
 		try {
 			if (remove) {
-				new Config().removeConfiguration();
+				if (!new Config().removeConfiguration()) {
+				    return ExitCode.EXIT_CONFIG_CANT_REMOVE_CONFIG.getValue();
+                }
 			}
 			else {
 				if (!dbStorage) {
@@ -102,12 +105,15 @@ public class Configurator implements Module {
 				else {
 					config = new Config(platform, user, password, host, port, dbName);
 				}
-				config.createConfiguration();
+				if (!config.createConfiguration()) {
+				    return ExitCode.EXIT_CONFIG_CANT_CREATE_CONFIG.getValue();
+                }
 			}
 		}
 		catch (Exception e) {
 			Logger.error(e.getMessage());
+			return ExitCode.EXIT_ERROR.getValue();
 		}
+		return ExitCode.EXIT_SUCCESSFUL.getValue();
 	}
-
 }

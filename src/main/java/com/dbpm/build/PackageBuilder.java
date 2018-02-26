@@ -12,11 +12,13 @@ package com.dbpm.build;
 import com.dbpm.Module;
 import com.dbpm.logger.Logger;
 import com.dbpm.repository.Package;
+import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.ManifestReader;
 import com.dbpm.utils.PackageValidator;
 import com.dbpm.utils.files.FileType;
 import com.dbpm.utils.files.IllegalFileException;
 import com.dbpm.utils.files.IllegalFolderException;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -73,43 +75,50 @@ public class PackageBuilder implements Module {
      * Kicks off the main building process.
      */
 	@Override
-	public void run() {
+	public int run() {
 		Logger.log("Building package...");
 		Logger.verbose("Current directory: " + workDir);
 		
 		File manifestFile = new File (workDir + "/" + FileType.MANIFEST.getValue());
 		if (!manifestFile.exists()) {
 			Logger.error("Manifest not found!");
-		}
-		else {
-			Logger.verbose("Found manifest, reading...");
-			try {
-				String manifest = new  String(
-											Files.readAllBytes(
-												Paths.get(manifestFile.getAbsolutePath())));
-				Package dbpmPackage = new ManifestReader(manifest).getPackage();
-				fullPackageName = dbpmPackage.getFullName();
-				Logger.verbose("Package name: " + dbpmPackage.getName());
-				Logger.verbose("Building for platform: " + dbpmPackage.getPlatform());
-				
-				String dbpgFileName = dbpmPackage.getFullName();
-				
-				File dbpgFile = new File(dbpgFileName);
-				if (dbpgFile.exists()) {
-					Logger.verbose("Package file already exists, overwriting...");
-					if (!dbpgFile.delete()) {
-					    Logger.error("Can't override package!");
-					    return;
-                    }
-				}
-				createPackage(dbpgFileName);
-			}
-			catch (IOException e) {
-				Logger.error("Can't read manifest file!");
-				Logger.error(e.getMessage());
-			}
+			return ExitCode.EXIT_BUILD_MANIFEST_NOT_FOUND.getValue();
 		}
 
+        Logger.verbose("Found manifest, reading...");
+        try {
+            String manifest = new  String(
+                                        Files.readAllBytes(
+                                            Paths.get(manifestFile.getAbsolutePath())));
+            Package dbpmPackage = new ManifestReader(manifest).getPackage();
+            fullPackageName = dbpmPackage.getFullName();
+            Logger.verbose("Package name: " + dbpmPackage.getName());
+            Logger.verbose("Building for platform: " + dbpmPackage.getPlatform());
+
+            String dbpgFileName = dbpmPackage.getFullName();
+
+            File dbpgFile = new File(dbpgFileName);
+            if (dbpgFile.exists()) {
+                Logger.verbose("Package file already exists, overwriting...");
+                if (!dbpgFile.delete()) {
+                    Logger.error("Can't override package!");
+                    return ExitCode.EXIT_BUILD_PACKAGE_EXISTS_CANT_OVERRIDE.getValue();
+                }
+            }
+            createPackage(dbpgFileName);
+        }
+        catch (IOException e) {
+            Logger.error("Can't read manifest file!");
+            Logger.error(e.getMessage());
+            return ExitCode.EXIT_BUILD_MANIFEST_NOT_READABLE.getValue();
+        }
+        catch(JSONException je) {
+            Logger.error("Manifest file not valid!");
+            Logger.error(je.getMessage());
+            return ExitCode.EXIT_BUILD_MANIFEST_NOT_VALID.getValue();
+        }
+
+        return ExitCode.EXIT_SUCCESSFUL.getValue();
 	}
 	
 	private void createPackage(String packageName) {

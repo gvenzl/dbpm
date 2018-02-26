@@ -208,6 +208,24 @@ Any post-installation tasks have to be specified here. There are three different
         -port            The port of the database
         -dbName          The database name for the repository to be stored at
     
+### Exit Codes
+DBPM uses several exit codes to signal the outcome of the program. This makes it easier for scripts calling DBPM to react to certain conditions.
+
+#### List of exit codes
+
+Exit Code                               | Value | Description
+--------------------------------------- | ----- | ---------------------------
+EXIT_SUCCESSFUL                         | 0     | The program has executed successfully
+EXIT_ERROR                              | 1     | The program has encountered an error. Please check the output for further information.
+EXIT_BUILD_MANIFEST_NOT_FOUND           | 101   | The program was unable to find the manifest file during a package build.
+EXIT_BUILD_MANIFEST_NOT_READABLE        | 102   | The program could not read the manifest file during a package build. Please check the output for further information.
+EXIT_BUILD_MANIFEST_NOT_VALID           | 103   | The manifest file is not a valid JSON document. Please check the output for further information.
+EXIT_BUILD_PACKAGE_EXISTS_CANT_OVERRIDE | 121   | The package to be built does already exist in the directory. An attempt was made to overwrite the existing package but the attempt has failed. Please check the output for further information.
+EXIT_CONFIG_CANT_REMOVE_CONFIG          | 201   | The configuration could not be removed. Please check the output for further information.
+EXIT_CONFIG_CANT_CREATE_CONFIG          | 202   | The program was unable to create the configuration. Please check the output for further information.
+EXIT_INSTALL_COULD_NOT_INSTALL_PACKAGE  | 301   | The program was unable to install the package. Please check the output for further information.
+EXIT_INSTALL_CANT_READ_PACKAGE          | 302   | The program was unable to read the package to be installed. Please check the output for further information.
+
 ## Repository
 dbpm has a repository in which it stores a copy of packages as all as and the information which packages have been installed where. The repository can either be held on disk in a file or in a database itself. The repository information holds a simple table of packages and packages installed:
 

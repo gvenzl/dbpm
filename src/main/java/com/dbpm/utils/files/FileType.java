@@ -34,7 +34,7 @@ public enum FileType {
 
     /**
      * Returns enum constant.
-     * @param value The value for the emum to search
+     * @param value The value for the enum to search
      * @return The enum constant
      */
     public static FileType getType(String value) {

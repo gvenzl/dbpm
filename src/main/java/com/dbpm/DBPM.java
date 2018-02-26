@@ -14,6 +14,7 @@ import com.dbpm.config.Configurator;
 import com.dbpm.install.Installer;
 import com.dbpm.logger.Verbose;
 import com.dbpm.uninstall.Uninstaller;
+import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.Parameter;
 
 public class DBPM {
@@ -25,7 +26,7 @@ public class DBPM {
 			msg = message;
 		}
 		
-		public void run() {
+		public int run() {
 			// Print message is one is given
 			if (null != msg) {
 				System.out.println(msg);
@@ -88,12 +89,14 @@ public class DBPM {
 			System.out.println("    -host            The host where the database is running on");
 			System.out.println("    -port            The port of the database");
 			System.out.println("    -dbName          The database name for the repository to be stored at");
+
+			return ExitCode.EXIT_ERROR.getValue();
 		}
 	}
 
-	public static void main(String[] args) {
+	public static int main(String[] args) {
 		Module module = parseOptions(args);
-		module.run();
+		return module.run();
 	}
 	
 	/**

@@ -9,24 +9,19 @@
 
 package com.dbpm.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.util.Base64;
-import java.util.Properties;
+import com.dbpm.logger.Logger;
+import com.dbpm.repository.FileRepository;
+import com.dbpm.repository.Repository;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-
-import com.dbpm.logger.Logger;
-import com.dbpm.repository.FileRepository;
-import com.dbpm.repository.Repository;
+import java.io.*;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
+import java.util.Properties;
 
 public class Config {
 
@@ -129,7 +124,11 @@ public class Config {
 		pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
 		return new String(pbeCipher.doFinal(Base64.getDecoder().decode(password)), "UTF-8");
 	}
-	
+
+    /**
+     * Remove all configuration, including the repository.
+     * @return True if and only if the remove has been successful.
+     */
 	public boolean removeConfiguration() {
 		try {
 			Repository repo = getRepository();
