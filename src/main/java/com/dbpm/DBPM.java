@@ -12,10 +12,10 @@ package com.dbpm;
 import com.dbpm.build.PackageBuilder;
 import com.dbpm.config.Configurator;
 import com.dbpm.install.Installer;
-import com.dbpm.logger.Verbose;
 import com.dbpm.uninstall.Uninstaller;
 import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.Parameter;
+import com.dbpm.utils.logger.Verbose;
 
 public class DBPM {
 

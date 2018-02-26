@@ -9,8 +9,8 @@
 
 package com.dbpm.repository;
 
-import com.dbpm.logger.Logger;
 import com.dbpm.utils.files.FileUtils;
+import com.dbpm.utils.logger.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

@@ -7,7 +7,7 @@
 *
 */
 
-package com.dbpm.logger;
+package com.dbpm.utils.logger;
 
 public class Verbose {
 	

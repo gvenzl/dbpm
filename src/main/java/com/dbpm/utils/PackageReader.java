@@ -9,10 +9,10 @@
 
 package com.dbpm.utils;
 
-import com.dbpm.logger.Logger;
 import com.dbpm.repository.Package;
 import com.dbpm.utils.files.FileType;
 import com.dbpm.utils.files.Phase;
+import com.dbpm.utils.logger.Logger;
 
 import java.io.File;
 import java.io.IOException;

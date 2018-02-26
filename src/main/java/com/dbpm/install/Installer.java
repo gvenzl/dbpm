@@ -12,7 +12,6 @@ package com.dbpm.install;
 import com.dbpm.Module;
 import com.dbpm.config.Config;
 import com.dbpm.db.DbType;
-import com.dbpm.logger.Logger;
 import com.dbpm.repository.Package;
 import com.dbpm.repository.Repository;
 import com.dbpm.utils.ExitCode;
@@ -21,6 +20,7 @@ import com.dbpm.utils.Parameter;
 import com.dbpm.utils.files.FileType;
 import com.dbpm.utils.files.FileUtils;
 import com.dbpm.utils.files.Phase;
+import com.dbpm.utils.logger.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;

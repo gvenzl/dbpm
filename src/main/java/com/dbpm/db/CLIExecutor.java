@@ -8,7 +8,7 @@
 */
 package com.dbpm.db;
 
-import com.dbpm.logger.Logger;
+import com.dbpm.utils.logger.Logger;
 
 public class CLIExecutor {
 

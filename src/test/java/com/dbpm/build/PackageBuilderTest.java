@@ -24,8 +24,8 @@
 
 package com.dbpm.build;
 
-import com.dbpm.logger.Verbose;
 import com.dbpm.utils.ExitCode;
+import com.dbpm.utils.logger.Verbose;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

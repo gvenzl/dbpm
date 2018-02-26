@@ -10,7 +10,6 @@
 package com.dbpm.build;
 
 import com.dbpm.Module;
-import com.dbpm.logger.Logger;
 import com.dbpm.repository.Package;
 import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.ManifestReader;
@@ -18,6 +17,7 @@ import com.dbpm.utils.PackageValidator;
 import com.dbpm.utils.files.FileType;
 import com.dbpm.utils.files.IllegalFileException;
 import com.dbpm.utils.files.IllegalFolderException;
+import com.dbpm.utils.logger.Logger;
 import org.json.JSONException;
 
 import java.io.File;

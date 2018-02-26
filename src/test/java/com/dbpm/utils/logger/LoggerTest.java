@@ -7,7 +7,7 @@
 *
 */
 
-package com.dbpm.logger;
+package com.dbpm.utils.logger;
 
 import org.junit.Test;
 

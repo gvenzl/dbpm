@@ -7,7 +7,7 @@
 *
 */
 
-package com.dbpm.logger;
+package com.dbpm.utils.logger;
 
 import java.io.Console;
 import java.util.Arrays;

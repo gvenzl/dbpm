@@ -9,9 +9,9 @@
 
 package com.dbpm.config;
 
-import com.dbpm.logger.Logger;
 import com.dbpm.repository.FileRepository;
 import com.dbpm.repository.Repository;
+import com.dbpm.utils.logger.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

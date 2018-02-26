@@ -11,9 +11,9 @@ package com.dbpm.config;
 
 import com.dbpm.Module;
 import com.dbpm.db.DbType;
-import com.dbpm.logger.Logger;
 import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.Parameter;
+import com.dbpm.utils.logger.Logger;
 
 public class Configurator implements Module {
 
