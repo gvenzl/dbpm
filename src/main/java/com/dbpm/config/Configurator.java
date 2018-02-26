@@ -1,18 +1,34 @@
-/*
-*
-* author:  gvenzl
-* created: 24 Mar 2016
-*
-* name: Configurator.java
-*
-*/
+// ***************************************************************************
+//
+// Author: gvenzl
+// Created: 24/03/2016
+//
+// Name: Configurator.java
+// Description: The Configurator module driver.
+//
+// Copyright 2016 - Gerald Venzl
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// ***************************************************************************
 
 package com.dbpm.config;
 
 import com.dbpm.Module;
-import com.dbpm.db.DBTYPE;
-import com.dbpm.logger.Logger;
+import com.dbpm.db.DbType;
+import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.Parameter;
+import com.dbpm.utils.logger.Logger;
 
 public class Configurator implements Module {
 
@@ -57,7 +73,7 @@ public class Configurator implements Module {
 					platform = args[++i];
 					
 					boolean supported = false;
-					for (DBTYPE type : DBTYPE.values()) {
+					for (DbType type : DbType.values()) {
 						if (platform.equals(type.name().toLowerCase())) {
 							supported = true;
 							break;
@@ -88,12 +104,14 @@ public class Configurator implements Module {
 	}
 	
 	@Override
-	public void run() {
+	public int run() {
 		Config config;
 		
 		try {
 			if (remove) {
-				new Config().removeConfiguration();
+				if (!new Config().removeConfiguration()) {
+				    return ExitCode.EXIT_CONFIG_CANT_REMOVE_CONFIG.getValue();
+                }
 			}
 			else {
 				if (!dbStorage) {
@@ -102,12 +120,15 @@ public class Configurator implements Module {
 				else {
 					config = new Config(platform, user, password, host, port, dbName);
 				}
-				config.createConfiguration();
+				if (!config.createConfiguration()) {
+				    return ExitCode.EXIT_CONFIG_CANT_CREATE_CONFIG.getValue();
+                }
 			}
 		}
 		catch (Exception e) {
 			Logger.error(e.getMessage());
+			return ExitCode.EXIT_ERROR.getValue();
 		}
+		return ExitCode.EXIT_SUCCESSFUL.getValue();
 	}
-
 }

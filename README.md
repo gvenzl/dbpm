@@ -2,9 +2,9 @@
 Database Package Manager (by gvenzl - 2016)
 
 ## Overview
-Database Package Manager lets you create, distribute and install packages for Databases. The idea is to provide similar functionality to package database code just like binaries in Unix environments. dbpm is written in Java, making it easy to run it on any platform and against any Database that complies with the JDBC standard.
+Database Package Manager lets you create, distribute and install packages for databases. The idea is to provide similar functionality to package database code just like binaries in Unix environments. dbpm is written in Java, making it easy to run it on any platform and against any database that complies with the JDBC standard.
 
-The dbpm package format is **NAME-MAJOR.MINOR.PATH-PLATFORM.dbpkg**  
+The dbpm package format is **NAME-MAJOR.MINOR.PATCH-PLATFORM.dbpkg**  
 
 **NAME:** Package name  
 **MAJOR:** Major version  
@@ -13,7 +13,7 @@ The dbpm package format is **NAME-MAJOR.MINOR.PATH-PLATFORM.dbpkg**
 **PLATFORM:** The Database platform (i.e. Oracle, MySQL, PostgreSQL)  
 **.dbpkg:** Extension marking the file as dbpm file  
 
-***The package numbers must comply with [Semantic Versioning 2.0.0](http://semver.org/)***
+***The package numbers (major, minor, and patch) must comply with [Semantic Versioning 2.0.0](http://semver.org/)***
 
 ## Package format
 In order to build a package archive (.dbpkg) the package source folder must have following structure:
@@ -101,9 +101,9 @@ Any dependencies will be verified first and if not present the installation abor
 **version:**  
 &nbsp;&nbsp;&nbsp;**major:** Major version of the package  
 &nbsp;&nbsp;&nbsp;**minor:** Minor version of the package  
-&nbsp;&nbsp;&nbsp;**patch:** Path version of the package  
+&nbsp;&nbsp;&nbsp;**patch:** Patch version of the package  
 
-**dependencies:** dbpm allows you to specify depending packages that have to be present before your package is installed. This is the fundamental cornerstone of modularisation. If your package depends on one or more packages, specify those dependency packages and versions here to guarantee its presence.  
+**dependencies:** dbpm allows you to specify depending packages that have to be present before your package is installed. This is the fundamental cornerstone of modularisation. If the package you are providing depends on one or more other packages specify those dependency packages and versions here to guarantee they are present.  
 &nbsp;&nbsp;&nbsp;**name:** Name of the required package to be present.  
 &nbsp;&nbsp;&nbsp;**min (mandatory):** The minimal version of the package  
 &nbsp;&nbsp;&nbsp;Only the `major` version number is required, `minor` and `patch` are optional. Whatever version is specified, dbpm will automatically check whether the version requirement is fulfilled.  
@@ -208,6 +208,26 @@ Any post-installation tasks have to be specified here. There are three different
         -port            The port of the database
         -dbName          The database name for the repository to be stored at
     
+### Exit Codes
+DBPM uses several exit codes to signal the outcome of the program. This makes it easier for scripts calling DBPM to react to certain conditions.
+
+#### List of exit codes
+
+Exit Code                               | Value | Description
+--------------------------------------- | ----- | ---------------------------
+EXIT_SUCCESSFUL                         | 0     | The program has executed successfully
+EXIT_ERROR                              | 1     | The program has encountered an error. Please check the output for further information.
+EXIT_BUILD_MANIFEST_NOT_FOUND           | 101   | The program was unable to find the manifest file during a package build.
+EXIT_BUILD_MANIFEST_NOT_READABLE        | 102   | The program could not read the manifest file during a package build. Please check the output for further information.
+EXIT_BUILD_MANIFEST_NOT_VALID           | 103   | The manifest file is not a valid JSON document. Please check the output for further information.
+EXIT_BUILD_PACKAGE_EXISTS_CANT_OVERRIDE | 121   | The package to be built does already exist in the directory. An attempt was made to overwrite the existing package but the attempt has failed. Please check the output for further information.
+EXIT_BUILD_ILLEGAL_FOLDER_FOUND         | 131   | The program has found an illegal folder in the package source directory. Please check the output for further information.
+EXIT_BUILD_ILLEGAL_FILE_FOUND           | 132   | The program has found an illegal file in the package source directory. Please check the output for further information.
+EXIT_CONFIG_CANT_REMOVE_CONFIG          | 201   | The configuration could not be removed. Please check the output for further information.
+EXIT_CONFIG_CANT_CREATE_CONFIG          | 202   | The program was unable to create the configuration. Please check the output for further information.
+EXIT_INSTALL_COULD_NOT_INSTALL_PACKAGE  | 301   | The program was unable to install the package. Please check the output for further information.
+EXIT_INSTALL_CANT_READ_PACKAGE          | 302   | The program was unable to read the package to be installed. Please check the output for further information.
+
 ## Repository
 dbpm has a repository in which it stores a copy of packages as all as and the information which packages have been installed where. The repository can either be held on disk in a file or in a database itself. The repository information holds a simple table of packages and packages installed:
 
@@ -243,3 +263,20 @@ Schema        | STRING (255)
 Package_Name  | STRING (125)
 
 In any case dbpm **does not store** any username and password information of database users and privileged users. Those have to be known at the time of execution of dbpm. The only credentials storeD will be those of the repository if the user decided to store the repository within a database.
+
+## Copyright (c)
+
+Copyright 2018 Gerald Venzl
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+

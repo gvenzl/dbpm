@@ -1,21 +1,39 @@
-/*
-*
-* author:  gvenzl
-* created: 24 Mar 2016
-*
-* name: PackageBuilder.java
-*
-*/
+// ***************************************************************************
+//
+// Author: gvenzl
+// Created: 24/03/2016
+//
+// Name: PackageBuilder.java
+// Description: The Package Builder main class.
+//
+// Copyright 2016 - Gerald Venzl
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// ***************************************************************************
 
 package com.dbpm.build;
 
 import com.dbpm.Module;
-import com.dbpm.logger.Logger;
 import com.dbpm.repository.Package;
+import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.ManifestReader;
 import com.dbpm.utils.PackageValidator;
+import com.dbpm.utils.files.FileType;
 import com.dbpm.utils.files.IllegalFileException;
 import com.dbpm.utils.files.IllegalFolderException;
+import com.dbpm.utils.logger.Logger;
+import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +52,6 @@ import java.util.zip.ZipOutputStream;
 public class PackageBuilder implements Module {
 
 	private static final int BYTES = 8192;
-	private static final String MANIFEST = "manifest.dpm";
 	private final File workDir;
 	private String fullPackageName;
 
@@ -53,55 +70,76 @@ public class PackageBuilder implements Module {
 		this.workDir =  new File(workDir);
 	}
 
+	/**
+	 * Returns the absolute path of the working directory.
+	 * @return The absolute path of the working directory.
+	 */
 	public String getWorkDir() {
 		return workDir.getAbsolutePath();
 	}
 
+    /**
+     * Returns the package name.
+     * @return The package name.
+     */
 	String getPackageName() {
 	    return fullPackageName;
     }
 
+    /**
+     * Kicks off the main building process.
+     */
 	@Override
-	public void run() {
+	public int run() {
 		Logger.log("Building package...");
 		Logger.verbose("Current directory: " + workDir);
 		
-		File manifestFile = new File (workDir + "/" + MANIFEST);
+		File manifestFile = new File (workDir + "/" + FileType.MANIFEST.getValue());
 		if (!manifestFile.exists()) {
 			Logger.error("Manifest not found!");
-		}
-		else {
-			Logger.verbose("Found manifest, reading...");
-			try {
-				String manifest = new  String(
-											Files.readAllBytes(
-												Paths.get(manifestFile.getAbsolutePath())));
-				Package dbpmPackage = new ManifestReader(manifest).getPackage();
-				fullPackageName = dbpmPackage.getFullName();
-				Logger.verbose("Package name: " + dbpmPackage.getName());
-				Logger.verbose("Building for platform: " + dbpmPackage.getPlatform());
-				
-				String dbpgFileName = dbpmPackage.getFullName();
-				
-				File dbpgFile = new File(dbpgFileName);
-				if (dbpgFile.exists()) {
-					Logger.verbose("Package file already exists, overwriting...");
-					if (!dbpgFile.delete()) {
-					    Logger.error("Can't override package!");
-					    return;
-                    }
-				}
-				createPackage(dbpgFileName);
-			}
-			catch (IOException e) {
-				Logger.error("Can't read manifest file!");
-				Logger.error(e.getMessage());
-			}
+			return ExitCode.EXIT_BUILD_MANIFEST_NOT_FOUND.getValue();
 		}
 
+        Logger.verbose("Found manifest, reading...");
+        try {
+            String manifest = new  String(
+                                        Files.readAllBytes(
+                                            Paths.get(manifestFile.getAbsolutePath())));
+            Package dbpmPackage = new ManifestReader(manifest).getPackage();
+            fullPackageName = dbpmPackage.getFullName();
+            Logger.verbose("Package name: " + dbpmPackage.getName());
+            Logger.verbose("Building for platform: " + dbpmPackage.getPlatform());
+
+            String dbpgFileName = dbpmPackage.getFullName();
+
+            File dbpgFile = new File(dbpgFileName);
+            if (dbpgFile.exists()) {
+                Logger.verbose("Package file already exists, overwriting...");
+                if (!dbpgFile.delete()) {
+                    Logger.error("Can't override package!");
+                    return ExitCode.EXIT_BUILD_PACKAGE_EXISTS_CANT_OVERRIDE.getValue();
+                }
+            }
+            return createPackage(dbpgFileName);
+        }
+        catch (IOException e) {
+            Logger.error("Can't read manifest file!");
+            Logger.error(e.getMessage());
+            return ExitCode.EXIT_BUILD_MANIFEST_NOT_READABLE.getValue();
+        }
+        catch(JSONException je) {
+            Logger.error("Manifest file not valid!");
+            Logger.error(je.getMessage());
+            return ExitCode.EXIT_BUILD_MANIFEST_NOT_VALID.getValue();
+        }
 	}
-	
-	private void createPackage(String packageName) {
+
+    /**
+     * Creates a DBPM package
+     * @param packageFileName The name of the package file
+     * @return An exit code, see {@link ExitCode}
+     */
+	private int createPackage(String packageFileName) {
 
 		byte[] buffer = new byte[BYTES];
 		int len;
@@ -110,7 +148,7 @@ public class PackageBuilder implements Module {
 			ArrayList<File> files = getDirectoryStructure(workDir.getAbsoluteFile());
 			
 			// Create zip file
-			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(packageName));
+			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(packageFileName));
 			zip.setMethod(ZipOutputStream.DEFLATED);
 			zip.setLevel(9);
 			
@@ -130,10 +168,20 @@ public class PackageBuilder implements Module {
 			}
 			// Close zip file
 			zip.close();
-			
-		} catch (Exception e) {
+			return ExitCode.EXIT_SUCCESSFUL.getValue();
+		}
+		catch (Exception e) {
 			Logger.error("Cannot create package archive!");
 			Logger.error(e.getMessage());
+			if (e instanceof IllegalFolderException) {
+                return ExitCode.EXIT_BUILD_ILLEGAL_FOLDER_FOUND.getValue();
+            }
+            else if (e instanceof IllegalFileException) {
+			    return ExitCode.EXIT_BUILD_ILLEGAL_FILE_FOUND.getValue();
+            }
+            else {
+			    return ExitCode.EXIT_ERROR.getValue();
+            }
 		}
 	}
 	

@@ -1,34 +1,44 @@
-/*
-*
-* author:  gvenzl
-* created: 27 Mar 2016
-*
-* name: FileRepository.java
-*
-*/
+// ***************************************************************************
+//
+// Author: gvenzl
+// Created: 27/03/2016
+//
+// Name: FileRepository.java
+// Description: The FileRepository calls is responsible for managing the file based repository.
+//
+// Copyright 2016 - Gerald Venzl
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// ***************************************************************************
 
 package com.dbpm.repository;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import com.dbpm.utils.files.FileUtils;
+import com.dbpm.utils.logger.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.dbpm.logger.Logger;
-import com.dbpm.utils.files.FileUtils;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class FileRepository implements Repository {
 	
@@ -77,12 +87,8 @@ public class FileRepository implements Repository {
 			}
 		}
 
-		if (!store.mkdir()) {
-			return false;
-		}
-
-		return true;
-	}
+        return store.mkdir();
+    }
 
 	@Override
 	public boolean writeEntry(String db, String schema, Package pkg) {
@@ -119,7 +125,7 @@ public class FileRepository implements Repository {
 	
 	private Element findNode(Element root, String nodeName, String name) {
 		NodeList nodeList = root.getElementsByTagName(nodeName);
-		for (int i=0;i<nodeList.getLength();i++) {
+		for (int i=0; i<nodeList.getLength(); i++) {
 			if(nodeList.item(i).getAttributes().getNamedItem("name").getNodeValue().equals(name)) {
 				return (Element) nodeList.item(i);
 			}
@@ -188,6 +194,24 @@ public class FileRepository implements Repository {
 			pkgFile.delete();
 			return false;
 		}
+	}
+
+	/**
+	 * Gets a package form the repository.
+	 *
+	 * @param pkg The package to load from the repository
+	 * @return The package file
+	 * @throws FileNotFoundException If the package file can't be found
+	 */
+	@Override
+	public File getPackage(Package pkg) throws FileNotFoundException {
+		File packageFile = new File(store.getAbsolutePath() + "/" + pkg.getFullName());
+		if (packageFile.exists()) {
+		    return packageFile;
+        }
+        else {
+		    throw new FileNotFoundException("File " + pkg.getFullName() + " not in repository");
+        }
 	}
 
 	private NodeList getPackageTree(String dbName, String schemaName) {

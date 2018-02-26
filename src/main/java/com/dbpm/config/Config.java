@@ -1,32 +1,42 @@
-/*
-*
-* author:  gvenzl
-* created: 27 Mar 2016
-*
-* name: Config.java
-*
-*/
+// ***************************************************************************
+//
+// Author: gvenzl
+// Created: 27/03/2016
+//
+// Name: Config.java
+// Description: The Config class is responsible for maintaining the configuration and repository for DBPM.
+//
+// Copyright 2016 - Gerald Venzl
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// ***************************************************************************
 
 package com.dbpm.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
-import java.util.Base64;
-import java.util.Properties;
+import com.dbpm.repository.FileRepository;
+import com.dbpm.repository.Repository;
+import com.dbpm.utils.logger.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-
-import com.dbpm.logger.Logger;
-import com.dbpm.repository.FileRepository;
-import com.dbpm.repository.Repository;
+import java.io.*;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
+import java.util.Properties;
 
 public class Config {
 
@@ -129,7 +139,11 @@ public class Config {
 		pbeCipher.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
 		return new String(pbeCipher.doFinal(Base64.getDecoder().decode(password)), "UTF-8");
 	}
-	
+
+    /**
+     * Remove all configuration, including the repository.
+     * @return True if and only if the remove has been successful.
+     */
 	public boolean removeConfiguration() {
 		try {
 			Repository repo = getRepository();

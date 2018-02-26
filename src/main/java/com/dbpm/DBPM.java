@@ -1,25 +1,39 @@
-/*
-*
-* author:  gvenzl
-* created: 24 Mar 2016
-*
-* name: DBPM.java
-*
-*/
+// ***************************************************************************
+//
+// Author: gvenzl
+// Created: 24/03/2016
+//
+// Name: DBPM.java
+// Description: The DBPM main class. Here is where all the fun starts but not where the magic happens. ;)
+//
+// Copyright 2016 - Gerald Venzl
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// ***************************************************************************
 
 package com.dbpm;
 
 import com.dbpm.build.PackageBuilder;
 import com.dbpm.config.Configurator;
 import com.dbpm.install.Installer;
-import com.dbpm.logger.Verbose;
 import com.dbpm.uninstall.Uninstaller;
+import com.dbpm.utils.ExitCode;
 import com.dbpm.utils.Parameter;
+import com.dbpm.utils.logger.Verbose;
 
 public class DBPM {
 
-	public static final String PKG_FILE_EXTENSION = ".dbpkg";
-	
 	static class HelpPrinter implements Module {
 		
 		private static String msg;
@@ -27,7 +41,7 @@ public class DBPM {
 			msg = message;
 		}
 		
-		public void run() {
+		public int run() {
 			// Print message is one is given
 			if (null != msg) {
 				System.out.println(msg);
@@ -90,12 +104,14 @@ public class DBPM {
 			System.out.println("    -host            The host where the database is running on");
 			System.out.println("    -port            The port of the database");
 			System.out.println("    -dbName          The database name for the repository to be stored at");
+
+			return ExitCode.EXIT_ERROR.getValue();
 		}
 	}
 
-	public static void main(String[] args) {
+	public static int main(String[] args) {
 		Module module = parseOptions(args);
-		module.run();
+		return module.run();
 	}
 	
 	/**
