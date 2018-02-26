@@ -105,7 +105,7 @@ public class PackageBuilder implements Module {
                     return ExitCode.EXIT_BUILD_PACKAGE_EXISTS_CANT_OVERRIDE.getValue();
                 }
             }
-            createPackage(dbpgFileName);
+            return createPackage(dbpgFileName);
         }
         catch (IOException e) {
             Logger.error("Can't read manifest file!");
@@ -117,11 +117,14 @@ public class PackageBuilder implements Module {
             Logger.error(je.getMessage());
             return ExitCode.EXIT_BUILD_MANIFEST_NOT_VALID.getValue();
         }
-
-        return ExitCode.EXIT_SUCCESSFUL.getValue();
 	}
-	
-	private void createPackage(String packageName) {
+
+    /**
+     * Creates a DBPM package
+     * @param packageFileName The name of the package file
+     * @return An exit code, see {@link ExitCode}
+     */
+	private int createPackage(String packageFileName) {
 
 		byte[] buffer = new byte[BYTES];
 		int len;
@@ -130,7 +133,7 @@ public class PackageBuilder implements Module {
 			ArrayList<File> files = getDirectoryStructure(workDir.getAbsoluteFile());
 			
 			// Create zip file
-			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(packageName));
+			ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(packageFileName));
 			zip.setMethod(ZipOutputStream.DEFLATED);
 			zip.setLevel(9);
 			
@@ -150,10 +153,20 @@ public class PackageBuilder implements Module {
 			}
 			// Close zip file
 			zip.close();
-			
-		} catch (Exception e) {
+			return ExitCode.EXIT_SUCCESSFUL.getValue();
+		}
+		catch (Exception e) {
 			Logger.error("Cannot create package archive!");
 			Logger.error(e.getMessage());
+			if (e instanceof IllegalFolderException) {
+                return ExitCode.EXIT_BUILD_ILLEGAL_FOLDER_FOUND.getValue();
+            }
+            else if (e instanceof IllegalFileException) {
+			    return ExitCode.EXIT_BUILD_ILLEGAL_FILE_FOUND.getValue();
+            }
+            else {
+			    return ExitCode.EXIT_ERROR.getValue();
+            }
 		}
 	}
 	

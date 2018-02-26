@@ -225,6 +225,8 @@ EXIT_CONFIG_CANT_REMOVE_CONFIG          | 201   | The configuration could not be
 EXIT_CONFIG_CANT_CREATE_CONFIG          | 202   | The program was unable to create the configuration. Please check the output for further information.
 EXIT_INSTALL_COULD_NOT_INSTALL_PACKAGE  | 301   | The program was unable to install the package. Please check the output for further information.
 EXIT_INSTALL_CANT_READ_PACKAGE          | 302   | The program was unable to read the package to be installed. Please check the output for further information.
+EXIT_BUILD_ILLEGAL_FOLDER_FOUND         | 131   | The program has found an illegal folder in the package source directory. Please check the output for further information.
+EXIT_BUILD_ILLEGAL_FILE_FOUND           | 132   | The program has found an illegal file in the package source directory. Please check the output for further information.
 
 ## Repository
 dbpm has a repository in which it stores a copy of packages as all as and the information which packages have been installed where. The repository can either be held on disk in a file or in a database itself. The repository information holds a simple table of packages and packages installed:
@@ -261,3 +263,20 @@ Schema        | STRING (255)
 Package_Name  | STRING (125)
 
 In any case dbpm **does not store** any username and password information of database users and privileged users. Those have to be known at the time of execution of dbpm. The only credentials storeD will be those of the repository if the user decided to store the repository within a database.
+
+## Copyright (c)
+
+Copyright 2018 Gerald Venzl
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+

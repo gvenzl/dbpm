@@ -14,7 +14,12 @@ package com.dbpm.utils;
  */
 public enum ExitCode {
 
-    // General exit codes
+    /*
+     ********************************** /
+     ******* General exit codes ******* /
+     ********************************** /
+     */
+
     /**
      * Successful program termination.
      */
@@ -24,7 +29,12 @@ public enum ExitCode {
      */
     EXIT_ERROR(1),
 
-    // Build related codes: 101 - 199
+    /*
+     ********************************** /
+     * Build related codes: 101 - 199 * /
+     ********************************** /
+     */
+
     /**
      * The manifest was not found.
      */
@@ -41,8 +51,21 @@ public enum ExitCode {
      * The package already exists and couldn't be overwritten.
      */
     EXIT_BUILD_PACKAGE_EXISTS_CANT_OVERRIDE(121),
+    /**
+     * The package contains an illegal folder.
+     */
+    EXIT_BUILD_ILLEGAL_FOLDER_FOUND(131),
+    /**
+     * The package contains an illegal file.
+     */
+    EXIT_BUILD_ILLEGAL_FILE_FOUND(132),
 
-    // Config related codes: 201 - 299
+    /*
+     *********************************** /
+     * Config related codes: 201 - 299 * /
+     *********************************** /
+     */
+
     /**
      * The configuration could not be removed.
      */
@@ -52,7 +75,12 @@ public enum ExitCode {
      */
     EXIT_CONFIG_CANT_CREATE_CONFIG(202),
 
-    // Install related codes: 301 - 399
+    /*
+     ************************************ /
+     * Install related codes: 301 - 399 * /
+     ************************************ /
+     */
+
     /**
      * The package could not be installed.
      */
@@ -62,7 +90,11 @@ public enum ExitCode {
      */
     EXIT_INSTALL_CANT_READ_PACKAGE(302);
 
-    // Uninstall related codes: 401 = 499
+    /*
+     ************************************** /
+     * Uninstall related codes: 401 - 499 * /
+     ************************************** /
+     */
 
     private int value;
 

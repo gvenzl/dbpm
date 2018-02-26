@@ -126,6 +126,7 @@ public class Installer implements Module {
                 DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*" + FileType.DBPKG);
                 // Install each dbpm package in the current working directory
                 // TODO: Build dependency tree instead and call install with right order
+                // TODO: Think about invalid packages and how to raise the exit code for it.
                 for (Path path : stream) {
                     installPackage(new File(path.getParent() + File.separator + path.getFileName()));
                 }
