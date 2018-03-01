@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dbpm</groupId>
   <artifactId>dbpm</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <name>Database Package Manager</name>
   <description>A Database Package Manager that allows you to deploy DB packages as part of your software distribution.</description>
   <dependencies>
@@ -16,6 +16,23 @@
       <artifactId>junit</artifactId>
       <version>RELEASE</version>
     </dependency>
+      <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+      <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+          <version>5.1.45</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+      <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+          <version>42.2.1</version>
+      </dependency>
+      <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc</artifactId>
+          <version>12.2.0.1</version>
+      </dependency>
   </dependencies>
   <build>
     <plugins>
