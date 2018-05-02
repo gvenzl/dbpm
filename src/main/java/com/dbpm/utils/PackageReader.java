@@ -66,8 +66,6 @@ public class PackageReader {
 				// Extract package information
 				s.useDelimiter("\\A");
 				manifest = new ManifestReader(s.next());
-				s.close();
-				pkgZip.close();
 		}
 	}
 
@@ -108,7 +106,6 @@ public class PackageReader {
 					}
 				}
 			}
-			pkgZip.close();
 		} catch (IOException e) {
 			Logger.error("Cannot read package file");
 			Logger.error(e.getMessage());
