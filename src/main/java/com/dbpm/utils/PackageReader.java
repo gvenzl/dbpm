@@ -39,15 +39,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Reads a package file and extracts content
+ * Reads a dbpm package file and its content.
  * @author gvenzl
  *
  */
 public class PackageReader {
 
-	private static final int BYTES = 8192;
-	private final File packageFile;
-	private ManifestReader manifest;
+	private static final int    BYTES = 8192;
+	private final File          packageFile;
+	private ManifestReader      manifest;
 	
 	/**
 	 * Creates a new package reader.
