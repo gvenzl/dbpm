@@ -28,7 +28,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DBExecutor {
+public class DBExecutor implements Executor {
 
     private final String userName;
     private final String hostName;
@@ -95,9 +95,15 @@ public class DBExecutor {
         return conn;
     }
 
-    public void runCommands(String commands) throws SQLException {
-
+    /**
+     * Executes given SQL commands
+     * @param commands The commands to be executed
+     * @return True on successful execution
+     * @throws SQLException Any database error during execution of the command
+     */
+    public boolean execute(String commands) throws SQLException {
         conn.createStatement().execute(commands);
+        return true;
     }
 
 }

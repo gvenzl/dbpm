@@ -60,7 +60,7 @@ public class DBExecutorTest {
     @Test
     public void test_MySQL_runCommand() throws SQLException {
         DBExecutor exec = new DBExecutor(DbType.MYSQL, userNameMySQL, passwordMySQL, hostName,  portMySQL, dbNameMySQL);
-        exec.runCommands("SELECT version()");
+        exec.execute("SELECT version()");
     }
 
     /**
@@ -79,7 +79,7 @@ public class DBExecutorTest {
     @Test
     public void test_PostgreSQL_runCommand() throws SQLException {
         DBExecutor exec = new DBExecutor(DbType.POSTGRES, userNamePostgres, passwordPostgres, hostName,  portPostgres, dbNamePostgres);
-        exec.runCommands("SELECT version()");
+        exec.execute("SELECT version()");
     }
 
     /**
@@ -98,6 +98,6 @@ public class DBExecutorTest {
     @Test
     public void test_Oracle_runCommand() throws SQLException {
         DBExecutor exec = new DBExecutor(DbType.ORACLE, userNameOracle, passwordOracle, hostName,  portOracle, dbNameOracle);
-        exec.runCommands("SELECT banner from v$version");
+        exec.execute("SELECT banner from v$version");
     }
 }

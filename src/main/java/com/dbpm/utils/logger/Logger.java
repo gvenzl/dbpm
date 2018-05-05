@@ -25,6 +25,8 @@
 package com.dbpm.utils.logger;
 
 import java.io.Console;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -84,4 +86,14 @@ public final class Logger {
 			if ("ynr".contains(response)) { return response; }
 		}
 	}
+
+    /**
+     * Prints an exception stack trace to the error output
+     * @param e The exception stack trace to print.
+     */
+	public static void error (Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        error(sw.toString());
+    }
 }

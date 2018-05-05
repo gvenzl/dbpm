@@ -1,10 +1,10 @@
 // ***************************************************************************
 //
 // Author: gvenzl
-// Created: 28/02/2018
+// Created: 03/05/2018
 //
-// Name: CLIExecutorTest.java
-// Description: JUnit test file for CLIExecutor
+// Name: Executor.java
+// Description: 
 //
 // Copyright 2018 - Gerald Venzl
 //
@@ -24,15 +24,13 @@
 
 package com.dbpm.db;
 
-import org.junit.Test;
-
-public class CLIExecutorTest {
+public interface Executor {
 
     /**
-     * Test the CLI execution.
+     * Executes given commands.
+     * @param commands The commands to be executed
+     * @return true on successful completion, otherwise false
+     * @throws Exception Any error that happens during the execution
      */
-    @Test
-    public void test_CLIExecutor_executeCLI() throws Exception {
-        new CLIExecutor().execute("echo OK");
-    }
+    boolean execute(String commands) throws Exception;
 }

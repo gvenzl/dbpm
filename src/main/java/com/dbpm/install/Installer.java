@@ -26,7 +26,10 @@ package com.dbpm.install;
 
 import com.dbpm.Module;
 import com.dbpm.config.Config;
+import com.dbpm.db.CLIExecutor;
+import com.dbpm.db.DBExecutor;
 import com.dbpm.db.DbType;
+import com.dbpm.db.Executor;
 import com.dbpm.repository.Package;
 import com.dbpm.repository.Repository;
 import com.dbpm.utils.ExitCode;
@@ -41,6 +44,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.*;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,14 +55,18 @@ import java.util.Map;
  */
 public class Installer implements Module {
 
-    private File	packageFile;
-    private String	userName;
-    private String	password;
-    private String	adminUser;
-    private String	adminPassword;
-    private String	host;
-    private String	port;
-    private String	dbName;
+    private File	    packageFile;
+    private String	    userName;
+    private String	    password;
+    private String  	adminUser;
+    private String  	adminPassword;
+    private String  	host;
+    private String	    port;
+    private String	    dbName;
+    private DbType      dbType;
+    private DBExecutor  dbExecutor;
+    private DBExecutor  dbAdminExecutor;
+    private CLIExecutor cliExecutor;
 
     /**
      * Constructs an Installer object.
@@ -126,7 +134,6 @@ public class Installer implements Module {
                             }
                         }
                     }
-                    break;
             }
         }
     }
@@ -134,6 +141,8 @@ public class Installer implements Module {
     @Override
     public int run() {
         Path dir;
+        // TODO: Think if this is a good thing or not. This might be a security risk
+        // as it could install many malicious packages and right now is prevented by the constructor.
         // if no file has been passed on, install all dbpkg files
         if (null == packageFile) {
             dir = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
@@ -178,7 +187,11 @@ public class Installer implements Module {
         }
 
         try {
+
             PackageReader pkgReader = new PackageReader(packageFile);
+            dbType = DbType.valueOf(pkgReader.getPackage().getPlatform());
+
+            // Get repository
             Repository repo = Config.getRepository();
 
             // Save package to repository
@@ -223,7 +236,7 @@ public class Installer implements Module {
 
             Logger.log("Installing file...");
             if (!executeInstallation(pkgReader)) {
-                Logger.error("Installation of ", pkgReader.getManifest().getPackage().getFullName(), " has been unsuccessful!");
+                Logger.error("Installation of ", pkgReader.getPackage().getFullName(), " has been unsuccessful!");
                 return false;
             }
             Logger.log("Installing file... DONE");
@@ -299,19 +312,14 @@ public class Installer implements Module {
      * @return True if the execution was successful
      */
     private boolean executePreInstallScripts(PackageReader pkgReader) {
-        DbType dbType = DbType.valueOf(pkgReader.getManifest().getPackage().getPlatform());
-        HashMap<String, String> preInstallScript = pkgReader.getPreInstallFiles();
-        if (!preInstallScript.isEmpty()) {
-            Logger.verbose("Executing pre-installation scripts...");
-            if (executeScripts(dbType, preInstallScript)) {
-                Logger.verbose("Executing pre-installation scripts... DONE");
-                return true;
-            }
-            else {
-                return false;
-            }
+        Logger.verbose("Executing pre-installation scripts...");
+        if (executeScripts(pkgReader.getPreInstallFiles())) {
+            Logger.verbose("Executing pre-installation scripts... DONE");
+            return true;
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
     /**
@@ -320,19 +328,15 @@ public class Installer implements Module {
      * @return True if the execution was successful
      */
     private boolean executeUpgradeScripts(PackageReader pkgReader) {
-        DbType dbType = DbType.valueOf(pkgReader.getManifest().getPackage().getPlatform());
-        HashMap<String, String> upgradeScripts = pkgReader.getUpgradeFiles();
-        if (!upgradeScripts.isEmpty()) {
-            Logger.verbose("Executing upgrade scripts...");
-            if (executeSQLScripts(dbType, upgradeScripts)) {
-                Logger.verbose("Executing upgrade scripts... DONE");
-            }
-            else {
-                Logger.error("Error executing upgrade scripts!");
-                return false;
-            }
+        Logger.verbose("Executing upgrade scripts...");
+        if (executeSQLScripts(pkgReader.getUpgradeFiles())) {
+            Logger.verbose("Executing upgrade scripts... DONE");
+            return true;
         }
-        return true;
+        else {
+            Logger.error("Error executing upgrade scripts!");
+            return false;
+        }
     }
 
     /**
@@ -341,19 +345,14 @@ public class Installer implements Module {
      * @return True if the execution was successful
      */
     private boolean executeInstallScripts(PackageReader pkgReader) {
-        DbType dbType = DbType.valueOf(pkgReader.getManifest().getPackage().getPlatform());
-        HashMap<String, String> installScripts = pkgReader.getInstallFiles();
-        if (!installScripts.isEmpty()) {
-            Logger.verbose("Executing installation scripts...");
-            if (executeSQLScripts(dbType, installScripts)) {
-                Logger.verbose("Executing installation scripts... DONE");
-                return true;
-            }
-            else {
-                return false;
-            }
+        Logger.verbose("Executing installation scripts...");
+        if (executeSQLScripts(pkgReader.getInstallFiles())) {
+            Logger.verbose("Executing installation scripts... DONE");
+            return true;
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
     /**
@@ -362,28 +361,22 @@ public class Installer implements Module {
      * @return True if the execution was successful
      */
     private boolean executePostInstallScripts(PackageReader pkgReader) {
-        DbType dbType = DbType.valueOf(pkgReader.getManifest().getPackage().getPlatform());
-        HashMap<String, String> postInstallScripts = pkgReader.getPostInstallFiles();
-        if (!postInstallScripts.isEmpty()) {
-            Logger.verbose("Executing post-installation scripts...");
-            if (executeScripts(dbType, postInstallScripts)) {
-                Logger.verbose("Executing post-installation scripts... DONE");
-                return true;
-            }
-            else {
-                return false;
-            }
+        Logger.verbose("Executing post-installation scripts...");
+        if (executeScripts(pkgReader.getPostInstallFiles())) {
+            Logger.verbose("Executing post-installation scripts... DONE");
+            return true;
         }
-        return true;
+        else {
+            return false;
+        }
     }
 
     /**
      * Executes all .sql scripts.
-     * @param dbType The database type to execute against
      * @param scripts The scripts to be executed
      * @return True if the execution has been successful
      */
-    private boolean executeSQLScripts(DbType dbType, HashMap<String, String> scripts) {
+    private boolean executeSQLScripts(HashMap<String, String> scripts) {
 
         HashMap<String, String> sqlEntries = new HashMap<>();
 
@@ -394,38 +387,98 @@ public class Installer implements Module {
             }
         }
 
-        return executeScripts(dbType, sqlEntries);
+        return executeScripts(sqlEntries);
     }
 
     /**
      * Executes installation scripts.
-     * @param dbType The database type to execute against
      * @param scripts The scripts files to be executed
      * @return True if the execution has been successful
      */
-    private boolean executeScripts(DbType dbType, HashMap<String, String> scripts) {
+    private boolean executeScripts(HashMap<String, String> scripts) {
 
-        Logger.log("Executing scripts...");
-        // Loop over scripts and execute them
-        //TODO: Parallelize scripts with same number
-        //TODO: Verify that files are iterated in correct order
-        for (Map.Entry<String, String> entry : scripts.entrySet()) {
-            String fileName = entry.getKey();
-            Logger.verbose("Executing file ", fileName);
+        if (!scripts.isEmpty()) {
+            Logger.log("Executing scripts...");
+            // Loop over scripts and execute them
+            //TODO: Parallelize scripts with same number
+            //TODO: Verify that files are iterated in correct order
+            try {
 
-            //TODO: Implement scripts execution
-            switch(FileType.getType(FileUtils.getExtension(fileName))) {
-                case SQL: {
-                    break;
+                for (Map.Entry<String, String> entry : scripts.entrySet()) {
+                    String fileName = entry.getKey();
+                    String commands = entry.getValue();
+                    Logger.verbose("Executing file ", fileName);
+
+                    Executor executor;
+                    switch (FileType.getType(FileUtils.getExtension(fileName))) {
+                        case SQL: {
+                            executor = getDbExecutor();
+                            break;
+                        }
+                        case SYS: {
+                            executor = getDbAdminExecutor();
+                            break;
+                        }
+                        case CMD: {
+                            executor = getCliExecutor();
+                            break;
+                        }
+                        default: {
+                            Logger.log("Invalid file type.");
+                            Logger.log("This should never happen, please raise a bug!");
+                            Logger.error(new RuntimeException("Unknown file type in Installer scripts execution"));
+                            return false;
+                        }
+                    }
+                    execute(executor, commands);
                 }
-                case SYS: {
-                    break;
-                }
-                case CMD: {
-                    break;
-                }
+            }
+            catch (Exception e) {
+                Logger.log("Error executing commands, rolling back...");
+                Logger.error(e.getMessage());
+                // TODO: Rollback actions
+                Logger.log("Rollback done");
             }
         }
         return false;
+    }
+
+    private boolean execute(com.dbpm.db.Executor executor, String commands) throws Exception {
+        return executor.execute(commands);
+    }
+
+    /**
+     * Returns an instance of a DBExecutor to execute SQL scripts with.
+     * @return A new instance of a DBExecutor
+     * @throws SQLException Any error that occurs while connecting to the database
+     */
+    private DBExecutor getDbExecutor() throws SQLException {
+        if (null == dbExecutor) {
+            dbExecutor = new DBExecutor(dbType, userName,  password, host, port, dbName);
+        }
+        return dbExecutor;
+    }
+
+    /**
+     * Returns an instance of a DBExecutor to execute SYS scripts with.
+     * @return A new instance of a DBExecutor
+     * @throws SQLException Any error that occurs while connecting to the database
+     */
+    private DBExecutor getDbAdminExecutor() throws SQLException {
+        if (null == dbAdminExecutor) {
+            dbAdminExecutor = new DBExecutor(dbType, adminUser, adminPassword, host, port, dbName);
+        }
+        return dbAdminExecutor;
+    }
+
+    /**
+     * Returns an instance of a CLIExecutor.
+     * @return A new instance of CLIExecutor
+     */
+    private CLIExecutor getCliExecutor() {
+        if (null == cliExecutor) {
+            cliExecutor = new CLIExecutor();
+        }
+        return cliExecutor;
     }
 }
