@@ -45,7 +45,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_buildPackage() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageCorrectFormat/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageCorrectFormat/");
         Assert.assertEquals(ExitCode.EXIT_SUCCESSFUL.getValue(), builder.run());
         // Clean up package
         Assert.assertTrue(new File(builder.getPackageName()).delete());
@@ -56,7 +56,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_buildPackageWithOnlyManifestAndFolders() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageWithOnlyManifestAndFolders/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageWithOnlyManifestAndFolders/");
         Assert.assertEquals(ExitCode.EXIT_SUCCESSFUL.getValue(), builder.run());
         // Clean up package
         Assert.assertTrue(new File(builder.getPackageName()).delete());
@@ -67,7 +67,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageNoManifest() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageNoManifest/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageNoManifest/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_MANIFEST_NOT_FOUND.getValue(), builder.run());
     }
 
@@ -76,7 +76,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageInvalidManifest() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageInvalidManifest/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageInvalidManifest/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_MANIFEST_NOT_VALID.getValue(), builder.run());
     }
 
@@ -85,7 +85,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageWithInvalidFolder() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageWithInvalidFolder/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageWithInvalidFolder/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_ILLEGAL_FOLDER_FOUND.getValue(), builder.run());
     }
 
@@ -94,7 +94,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageWithInvalidFileInPreinstall() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageWithInvalidFileInPreinstall/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageWithInvalidFileInPreinstall/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_ILLEGAL_FILE_FOUND.getValue(), builder.run());
     }
 
@@ -103,7 +103,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageWithInvalidFileInUpgrade() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageWithInvalidFileInUpgrade/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageWithInvalidFileInUpgrade/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_ILLEGAL_FILE_FOUND.getValue(), builder.run());
     }
 
@@ -112,7 +112,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageWithInvalidFileInInstall() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageWithInvalidFileInInstall/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageWithInvalidFileInInstall/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_ILLEGAL_FILE_FOUND.getValue(), builder.run());
     }
 
@@ -121,7 +121,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageWithInvalidFileInRollback() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageWithInvalidFileInRollback/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageWithInvalidFileInRollback/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_ILLEGAL_FILE_FOUND.getValue(), builder.run());
     }
 
@@ -130,7 +130,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageWithInvalidFileInDowngrade() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageWithInvalidFileInDowngrade/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageWithInvalidFileInDowngrade/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_ILLEGAL_FILE_FOUND.getValue(), builder.run());
     }
 
@@ -139,7 +139,7 @@ public class PackageBuilderTest {
      */
     @Test
     public void test_negative_buildPackageWithInvalidFileInPostinstall() {
-        PackageBuilder builder = new PackageBuilder("src/test/resources/TestPackageWithInvalidFileInPostinstall/");
+        PackageBuilder builder = new PackageBuilder("src/test/resources/PackageBuilderTests/TestPackageWithInvalidFileInPostinstall/");
         Assert.assertEquals(ExitCode.EXIT_BUILD_ILLEGAL_FILE_FOUND.getValue(), builder.run());
     }
 }
